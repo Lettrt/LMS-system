@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <!-- Левая колонка с фото и контактами -->
+        <div class="col-md-4">
+            <img src="{{ student.photo.url }}" alt="{{ student.first_name }}" width="200"
+                class="img-fluid rounded mb-3">
+            {% if user == object.user %}
+            <p><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                    Редактировать профиль
+                </button></p>
+            {% endif %}
+            <p><strong><img src="{% static 'img/envelope-solid.svg' %}
+                " alt="email" width="20" class="pe-2">Email:</strong> {{ student.email }}</p>
+            <p><strong><img src="{% static 'img/phone-solid.svg' %}
+                " alt="phone" width="20" class="pe-2">Телефон:</strong> {{ student.phone_number }}</p>
+            <div class="d-flex align-items-center">
+                <a href="{{ student.linked_in }}" target="_blank"><img src="{% static 'img/linkedin.svg' %}
+                    " alt="LinkedIn" width="44"></a>
+                <a href="{{ student.face_book }}" target="_blank" class="mx-4"><img
+                        src="{% static 'img/facebook.svg' %}" alt="Facebook" width="44"></a>
+                <a href="{{ student.instagram }}" target="_blank"><img src="{% static 'img/instagram.svg' %}"
+                        alt="Instagram" width="44"></a>
+            </div>
+        </div>
+        <div class="col-md-3">
+        </div>
+        <!-- Правая колонка с информацией о студенте -->
+        <div class="col-md-4">
+            <h1>{{ student.first_name }} {{ student.last_name }}</h1>
+            <p><strong>Дата рождения:</strong> {{ student.date_of_bith }}</p>
+            <p><strong>О себе:</strong> {{ student.bio }}</p>
+            <!-- Уроки -->
+            <h3>Уроки</h3>
+            <ul>
+                <!-- Пример вывода уроков (зависит от вашей логики) -->
+                {% for lesson in student.lessons.all %}
+                <li>{{ lesson.title }}</li>
+                {% endfor %}
+            </ul>
+
+            <!-- Домашние задания -->
+            <h3>Домашние задания</h3>
+            <ul>
+                <!-- Пример вывода домашних заданий -->
+                {% for assignment in student.assignments.all %}
+                <li>{{ assignment.title }}</li>
+                {% endfor %}
+            </ul>
+
+            <!-- Прогресс и средний балл -->
+            <h3>Прогресс</h3>
+            <p>Здесь будет отображаться прогресс студента.</p>
+
+            <h3>Средний балл</h3>
+            <p>Здесь будет отображаться средний балл студента.</p>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL WINDOW -->
+{% if user == object.user %}
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProfileModalLabel">Редактирование профиля</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" enctype="multipart/form-data" action="{% url 'edit_student_profile' object.pk %}">
+                <div class="modal-body">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label for="{{ form.email.id_for_label }}">Email</label>
+                        <input type="email" class="form-control" id="{{ form.email.id_for_label }}" name="email"
+                            value="{{ student.email }}" maxlength="255" minlength="10"
+                            pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}">
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.date_of_bith.id_for_label }}">Дата рождения</label>
+                        <input type="date" class="form-control" id="{{ form.date_of_bith.id_for_label }}"
+                            name="date_of_bith" value="{{ student.date_of_bith|date:'Y-m-d' }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.phone_number.id_for_label }}">Телефон</label>
+                        <input type="text" class="form-control" id="{{ form.phone_number.id_for_label }}"
+                            name="phone_number" value="{{ student.phone_number }}" minlength="10" maxlength="20">
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <label for="{{ form.photo.id_for_label }}">Фото</label>
+                        {% if student.photo %}
+                        <div class="mb-2">
+                            <img src="{{ student.photo.url }}" alt="Текущее фото"
+                                style="max-width: 150px; max-height: 150px;">
+                        </div>
+                        {% endif %}
+                        <input type="file" class="form-control-file" id="{{ form.photo.id_for_label }}" name="photo">
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <label for="{{ form.bio.id_for_label }}">О себе</label>
+                        <textarea class="form-control" id="{{ form.bio.id_for_label }}" name="bio"
+                            maxlength="5000">{{ student.bio }}</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.linked_in.id_for_label }}">LinkedIn</label>
+                        <input type="url" class="form-control" id="{{ form.linked_in.id_for_label }}" name="linked_in"
+                            value="{{ student.linked_in }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.face_book.id_for_label }}">Facebook</label>
+                        <input type="url" class="form-control" id="{{ form.face_book.id_for_label }}" name="face_book"
+                            value="{{ student.face_book }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.instagram.id_for_label }}">Instagram</label>
+                        <input type="url" class="form-control" id="{{ form.instagram.id_for_label }}" name="instagram"
+                            value="{{ student.instagram }}">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
