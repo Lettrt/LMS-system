@@ -8,6 +8,7 @@
     <div class="row">
         <div class="col">
             <h1 class="text-center">Log-in</h1>
+            <br>
             {% if form.errors %}
             <p class="alert alert-danger">
                 Указан неверный логин или пароль
@@ -18,9 +19,7 @@
                 <div class="mb-3">
                     <label for="{{ form.username.id_for_label }}" class="form-label">Имя пользователя</label>
                     <input type="text" name="{{ form.username.name }}" class="form-control"
-                        id="{{ form.username.id_for_label }}" value="{{ form.username.value }}"
-                        aria-describedby="usernameHelp">
-
+                        id="{{ form.username.id_for_label }}" placeholder="username" aria-describedby="usernameHelp">
                 </div>
                 <div class="mb-3">
                     <label for="{{ form.password.id_for_label }}" class="form-label">Пароль</label>
