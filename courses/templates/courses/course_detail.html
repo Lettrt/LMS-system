@@ -31,8 +31,10 @@
             {% endif %}
             {% for comment in course.comments.all %}
             <div class="mb-4 mt-4 d-flex align-items-start">
-                <img src="{{ comment.student.photo.url }}" alt="{{ comment.student.first_name }}"
-                    class="rounded-circle img-fluid" style="width: 50px; height: 50px;">
+                <a href="{% url 'student_detail' comment.student.pk %}">
+                    <img src="{{ comment.student.photo.url }}" alt="{{ comment.student.first_name }}"
+                        class="rounded-circle img-fluid" style="width: 50px; height: 50px;">
+                </a>
                 <div class="ms-3">
                     <strong>{{ comment.student.first_name }} ({{  comment.student.course.title }})</strong>
                     <p>{{ comment.text }}</p>
