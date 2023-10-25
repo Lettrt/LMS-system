@@ -1,23 +1,109 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-<h2>{{ course.title }}</h2>
-<img src="{{ course.logo.url }}" alt="{{ course.title }}">
-<p>{{ course.descritption }}</p>
-<p>Продолжительность: {{ course.duration }}</p>
-<p>Средний рейтинг: {{ course.average_rating }}</p>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8">
+            <h2 class="mb-4">{{ course.title }}</h2>
+            <div class="row">
+                <div class="col-4">
+                    <img src="{{ course.logo.url }}" alt="{{ course.title }}" class="img-fluid rounded mb-3"
+                        style="height: 250px; width: auto; object-fit: cover;">
+                </div>
+                <div class="col-4">
+                    <p><strong>Продолжительность:</strong> {{ course.duration }} месяцев</p>
+                    <p><strong>Средний рейтинг:</strong> {{ course.average_rating }}</p>
+                    <p><strong>Количество студентов:</strong> {{ course.student_count }}</p>
+                    <p><button type="button" class="btn btn-info">Записаться на курсы</button></p>
+                    {% if user.is_authenticated %}
+                    <p><button type="button" class="btn btn-success" data-bs-toggle="modal"
+                            data-bs-target="#ratingModal">Оценить</button></p>
+                    {% endif %}
+                </div>
+            </div>
+            <p>{{ course.descritption }}</p>
+        </div>
+        <div class="col-md-4">
+            <h3>Комментарии</h3>
+            {% if user.is_authenticated %}
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#commentModal">Оставить
+                комментарий</button>
+            {% endif %}
+            {% for comment in course.comments.all %}
+            <div class="mb-4 mt-4 d-flex align-items-start">
+                <img src="{{ comment.student.photo.url }}" alt="{{ comment.student.first_name }}"
+                    class="rounded-circle img-fluid" style="width: 50px; height: 50px;">
+                <div class="ms-3">
+                    <strong>{{ comment.student.first_name }} ({{  comment.student.course.title }})</strong>
+                    <p>{{ comment.text }}</p>
+                    <small class="text-muted">{{ comment.created_at }}</small>
+                </div>
+            </div>
 
-{% if user_rating %}
-<p>Ваш рейтинг: {{ user_rating }}</p>
-{% endif %}
-
-<h3>Комментарии</h3>
-{% for comment in course.comments.all %}
-<div>
-    <strong>{{ comment.student.first_name }}</strong>
-    <p>{{ comment.text }}</p>
-    <small>{{ comment.created_at }}</small>
+            {% endfor %}
+        </div>
+    </div>
 </div>
-{% endfor %}
+
+<div class="modal fade" id="commentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{% url 'add_comment' %}">
+                {% csrf_token %}
+                <input type="hidden" name="course_id" value="{{ course.pk }}">
+                <div class="modal-header">
+                    <h5 class="modal-title">Оставить комментарий</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <textarea name="comment_text" class="form-control" placeholder="Ваш комментарий"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ratingModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{% url 'add_rating' %}">
+                {% csrf_token %}
+                <input type="hidden" name="course_id" value="{{ course.pk }}">
+                <div class="modal-header">
+                    <h5 class="modal-title">Оценить курс</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <label>Выберите рейтинг:</label>
+                    {% for i in "12345" %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="rating_value" id="rating{{ i }}"
+                            value="{{ i }}">
+                        <label class="form-check-label" for="rating{{ i }}">
+                            {{ i }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                    {% if not has_rated %}
+                    <button type="submit" class="btn btn-primary">Оценить</button>
+                    {% endif %}
+                    {% if has_rated %}
+                    <button type="submit" class="btn btn-warning">Обновить оценку</button>
+                    {% endif %}
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
 
 {% endblock %}
