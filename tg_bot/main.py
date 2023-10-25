@@ -22,8 +22,8 @@ dp = Dispatcher(bot, storage=storage)
 
 async def send_telegram_notification(contact_data: Dict[str, str]) -> None:
     '''
-    Получение уведомления с сайта о новом запросе пользователя.
-    contact_data - словарь с данными пользователя, получаем с формы на сайте.
+    Receiving a notification from the website about a new user request.
+    contact_data - a dictionary with user data, obtained from the form on the website.
     '''
     message_text = f"Новый запрос от пользователя:\n\n"
     message_text += f"Имя: {contact_data['name']}\n"
