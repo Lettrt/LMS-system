@@ -42,7 +42,7 @@ class Student(UserProfile):
         ordering = ["last_name", "first_name"]
 
     def __str__(self):
-        return f' Студент {self.first_name} {self.last_name}.' 
+        return f'Студент {self.first_name} {self.last_name}.' 
 
 class Teacher(UserProfile):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='teacher_profile')
@@ -53,7 +53,7 @@ class Teacher(UserProfile):
         ordering = ["last_name", "first_name"]
     
     def __str__(self):
-        return f' Ментор {self.first_name} {self.last_name}.' 
+        return f'Ментор {self.first_name} {self.last_name}.' 
 
 class Manager(UserProfile):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='manager_profile')
@@ -64,4 +64,4 @@ class Manager(UserProfile):
         ordering = ["last_name", "first_name"]
 
     def __str__(self):
-        return f' Менеджер {self.first_name} {self.last_name}.'
+        return f'Менеджер {self.first_name} {self.last_name}.'

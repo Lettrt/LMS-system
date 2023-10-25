@@ -60,15 +60,21 @@ def has_student_rated_course(student, course):
 
 def add_rating(request):
     if request.method == 'POST' and request.user.is_authenticated:
-        rating_value = int(request.POST['rating_value'])
-        course_id = request.POST.get('course_id')
-        student_instance = request.user.student_profile
-        existing_rating = Rating.objects.filter(course_id=course_id, student=student_instance).first()
-        if existing_rating:
-            existing_rating.rating = rating_value
-            existing_rating.save()
-        else:
-            Rating.objects.create(rating=rating_value, student=student_instance, course_id=course_id)
+        try:
+            rating_value = int(request.POST['rating_value'])
+            course_id = request.POST.get('course_id')
+            if not 1 <= rating_value <= 5:
+                raise ValueError("Rating value should be between 1 and 5")
+            student_instance = request.user.student_profile
+            rating, created = Rating.objects.get_or_create(
+                course_id=course_id, student=student_instance,
+                defaults={'rating': rating_value}
+            )
+            if not created:
+                rating.rating = rating_value
+                rating.save()
+        except (ValueError, KeyError):
+            f'Рейтинг от 1 до 5'
 
     return redirect('course_detail', pk=course_id)
 

@@ -26,8 +26,12 @@
             <h4 class="text-center">Последие выполненные задания</h2>
         </div>
         <div class="col-md-4">
+            {% if student.photo %}
             <img src="{{ student.photo.url }}" alt="{{ student.first_name }}" width="200"
                 class="img-fluid rounded mb-3">
+            {% else %}
+            <p>Фотографии нет</p>
+            {% endif %}
             {% if user == object.user %}
             <p><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
                     Редактировать профиль
