@@ -3,7 +3,27 @@
 {% block content %}
 <div class="container mt-5">
     <div class="row">
-        <!-- Левая колонка с фото и контактами -->
+        <div class="col-md-4">
+            <h1>{{ student.first_name }} {{ student.last_name }}</h1>
+            <p><strong>Дата рождения:</strong> {{ student.date_of_bith }}</p>
+            <p><strong>О себе:</strong> {{ student.bio }}</p>
+            <h3>Уроки</h3>
+            <ul>
+                пример
+            </ul>
+            <h3>Домашние задания</h3>
+            <ul>
+                пример
+            </ul>
+            <h3>Прогресс</h3>
+            <p>Здесь будет отображаться прогресс студента.</p>
+
+            <h3>Средний балл</h3>
+            <p>Здесь будет отображаться средний балл студента.</p>
+        </div>
+        <div class="col-md-4">
+            <h4 class="text-center">Последие выполненные задания</h2>
+        </div>
         <div class="col-md-4">
             <img src="{{ student.photo.url }}" alt="{{ student.first_name }}" width="200"
                 class="img-fluid rounded mb-3">
@@ -23,39 +43,9 @@
                         src="{% static 'img/facebook.svg' %}" alt="Facebook" width="44"></a>
                 <a href="{{ student.instagram }}" target="_blank"><img src="{% static 'img/instagram.svg' %}"
                         alt="Instagram" width="44"></a>
+                <a href="{{ student.instagram }}" target="_blank" class="pe-4"></a><img
+                    src="{% static 'img/github.svg' %}" alt="Instagram" width="44"></a>
             </div>
-        </div>
-        <div class="col-md-3">
-        </div>
-        <!-- Правая колонка с информацией о студенте -->
-        <div class="col-md-4">
-            <h1>{{ student.first_name }} {{ student.last_name }}</h1>
-            <p><strong>Дата рождения:</strong> {{ student.date_of_bith }}</p>
-            <p><strong>О себе:</strong> {{ student.bio }}</p>
-            <!-- Уроки -->
-            <h3>Уроки</h3>
-            <ul>
-                <!-- Пример вывода уроков (зависит от вашей логики) -->
-                {% for lesson in student.lessons.all %}
-                <li>{{ lesson.title }}</li>
-                {% endfor %}
-            </ul>
-
-            <!-- Домашние задания -->
-            <h3>Домашние задания</h3>
-            <ul>
-                <!-- Пример вывода домашних заданий -->
-                {% for assignment in student.assignments.all %}
-                <li>{{ assignment.title }}</li>
-                {% endfor %}
-            </ul>
-
-            <!-- Прогресс и средний балл -->
-            <h3>Прогресс</h3>
-            <p>Здесь будет отображаться прогресс студента.</p>
-
-            <h3>Средний балл</h3>
-            <p>Здесь будет отображаться средний балл студента.</p>
         </div>
     </div>
 </div>
