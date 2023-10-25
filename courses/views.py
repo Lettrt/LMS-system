@@ -1,9 +1,12 @@
 from django.views.generic import ListView, DetailView
-from django.http import HttpResponseForbidden
-from django.http import JsonResponse
-from .models import Course, Rating, Comment
 from django.db.models import Count
 from django.shortcuts import redirect,render
+import asyncio
+from .models import Course, Rating, Comment
+from .forms import CourseApplicationForm
+from tg_bot.main import send_telegram_notification
+
+
 
 class CourseListView(ListView):
     model = Course
@@ -68,3 +71,22 @@ def add_rating(request):
             Rating.objects.create(rating=rating_value, student=student_instance, course_id=course_id)
 
     return redirect('course_detail', pk=course_id)
+
+def course_application(request):
+    if request.method == 'POST':
+        course_id = request.POST.get('course_id')
+        form = CourseApplicationForm(request.POST)
+        if form.is_valid():
+            application = form.save()
+            contact_data = {
+                'name': application.name,
+                'email': application.email,
+                'phone_number': application.phone_number,
+                'message': application.message
+            }
+            asyncio.run(send_telegram_notification(contact_data))
+            
+            return redirect('course_detail', pk=course_id)
+    else:
+        form = CourseApplicationForm()
+    return render(request, 'application_form.html', {'form': form})

@@ -14,7 +14,8 @@
                     <p><strong>Продолжительность:</strong> {{ course.duration }} месяцев</p>
                     <p><strong>Средний рейтинг:</strong> {{ course.average_rating }}</p>
                     <p><strong>Количество студентов:</strong> {{ course.student_count }}</p>
-                    <p><button type="button" class="btn btn-info">Записаться на курсы</button></p>
+                    <p><button type="button" class="btn btn-info" data-bs-toggle="modal"
+                            data-bs-target="#courseApplicationModal">Записаться на курсы</button></p>
                     {% if user.is_authenticated %}
                     <p><button type="button" class="btn btn-success" data-bs-toggle="modal"
                             data-bs-target="#ratingModal">Оценить</button></p>
@@ -99,7 +100,48 @@
                     {% if has_rated %}
                     <button type="submit" class="btn btn-warning">Обновить оценку</button>
                     {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
+<div class="modal fade" id="courseApplicationModal" tabindex="-1" aria-labelledby="courseApplicationModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="courseApplicationModalLabel">Записаться на курс</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'course_application' %}">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <input type="hidden" name="course_id" value="{{ course.pk }}">
+                    <div class="form-group">
+                        <label for="{{ form.name.id_for_label }}">Имя</label>
+                        <input type="text" class="form-control" id="{{ form.name.id_for_label }}" name="name"
+                            minlength="3" maxlength="50">
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.email.id_for_label }}">Email</label>
+                        <input type="email" class="form-control" id="{{ form.email.id_for_label }}" name="email"
+                            maxlength="255" minlength="10" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}">
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.phone_number.id_for_label }}">Номер телефона</label>
+                        <input type="text" class="form-control" id="{{ form.phone_number.id_for_label }}"
+                            name="phone_number" minlength="10" maxlength="20">
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.message.id_for_label }}">Сообщение</label>
+                        <textarea class="form-control" id="{{ form.message.id_for_label }}" name="message"
+                            rows="5"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                    <button type="submit" class="btn btn-primary">Отправить</button>
                 </div>
             </form>
         </div>

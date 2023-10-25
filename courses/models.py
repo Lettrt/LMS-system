@@ -56,3 +56,13 @@ class Rating(models.Model):
 
     def __str__(self):
         return f'Оценка {self.rating} от {self.student.first_name} для курса {self.course.title}'
+    
+class CourseApplication(models.Model):
+    name = models.CharField(max_length=200)
+    email = models.EmailField()
+    phone_number = models.CharField(max_length=20)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
