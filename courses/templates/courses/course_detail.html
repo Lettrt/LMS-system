@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<h2>{{ course.title }}</h2>
+<img src="{{ course.logo.url }}" alt="{{ course.title }}">
+<p>{{ course.descritption }}</p>
+<p>Продолжительность: {{ course.duration }}</p>
+<p>Средний рейтинг: {{ course.average_rating }}</p>
+
+{% if user_rating %}
+<p>Ваш рейтинг: {{ user_rating }}</p>
+{% endif %}
+
+<h3>Комментарии</h3>
+{% for comment in course.comments.all %}
+<div>
+    <strong>{{ comment.student.first_name }}</strong>
+    <p>{{ comment.text }}</p>
+    <small>{{ comment.created_at }}</small>
+</div>
+{% endfor %}
+
+{% endblock %}

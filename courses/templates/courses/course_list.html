@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-5 text-center">Список курсов</h1>
+    <div class="row">
+        {% for course in courses %}
+        <div class="col-md-3 mb-4">
+            <div class="card h-100">
+                {% if course.logo %}
+                <img class="card-img-top" src="{{ course.logo.url }}" alt="{{ course.title }}"
+                    style="height: 200px; width: auto; object-fit: cover;">
+                {% endif %}
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title"><a href="{% url 'course_detail' course.pk %}">{{ course.title }}</a></h5>
+                    <p class="card-text flex-grow-1">{{ course.descritption|truncatechars:100 }}</p>
+                    <p><strong>Продолжительность:</strong> {{ course.duration }}</p>
+                    <p><strong>Средний рейтинг:</strong> {{ course.average_rating }}</p>
+                </div>
+                <div class="card-footer">
+                    <h6>Комментарии:</h6>
+                    <ul class="list-unstyled">
+                        {% for comment in course.top_comments %}
+                        <li class="mb-2">
+                            <strong>{{ comment.student.first_name }}:</strong> {{ comment.text|truncatechars:50 }}
+                        </li>
+                        {% empty %}
+                        <li>Пока нет комментариев.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
