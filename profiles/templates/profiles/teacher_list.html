@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Список учителей</h2>
+    <ul>
+    {% for teacher in teachers %}
+        <li><a href="{% url 'teacher-detail' teacher.pk %}">{{ teacher }}</a></li>
+    {% endfor %}
+    </ul>
+{% endblock %}

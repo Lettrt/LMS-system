@@ -27,6 +27,14 @@ class UserProfile(models.Model):
     face_book = models.URLField(blank=True, null=True)
     instagram = models.URLField(blank=True, null=True)
     is_staff_member = models.BooleanField(default=False)
+
+    ROLE_CHOICES = (
+        ('student', 'Студент'),
+        ('teacher', 'Учитель'),
+        ('manager', 'Менеджер'),
+    )
+
+    role = models.CharField(max_length=25, choices=ROLE_CHOICES, default='student')
     
     class Meta:
         abstract = True
@@ -46,6 +54,7 @@ class Student(UserProfile):
 
 class Teacher(UserProfile):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='teacher_profile')
+    course = models.ForeignKey('courses.Course', on_delete=models.SET_NULL, null=True)
     
     class Meta:
         verbose_name = "Учитель"

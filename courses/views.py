@@ -4,6 +4,7 @@ from django.shortcuts import redirect,render
 import asyncio
 from .models import Course, Rating, Comment
 from .forms import CourseApplicationForm
+from profiles.models import Teacher
 from tg_bot.main import send_telegram_notification
 
 class CourseListView(ListView):
@@ -36,6 +37,7 @@ class CourseDetailView(DetailView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['mentors'] = Teacher.objects.filter(course=self.get_object())[:2]
         if self.request.user.is_authenticated:
             student = self.request.user.student_profile
             current_rating = Rating.objects.filter(course=self.get_object(), student=student).first()

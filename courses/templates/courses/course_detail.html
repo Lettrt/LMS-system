@@ -22,6 +22,27 @@
                     {% endif %}
                 </div>
             </div>
+            <div class="row">
+                <h4 class="text-center"><strong>Менторы</strong></p>
+                </h4>
+                {% for mentor in mentors %}
+                <div class="col-md-6 mb-4">
+                    <div class="card" style="width: 100%; height: 300px;">
+                        {% if mentor.photo %}
+                        <img src="{{ mentor.photo.url }}" class="card-img-top" alt="{{ mentor.first_name }}"
+                            style="height: 60%; object-fit: cover;">
+                        {% else %}
+                        <p>фото нет</p>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ mentor.first_name }} {{ mentor.last_name }}</h5>
+                            <p class="card-text">{{ mentor.bio }}</p>
+                            <a href="{% url 'teacher_detail' mentor.pk %}" class="btn btn-primary">Подробнее</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
             <p>{{ course.descritption }}</p>
         </div>
         <div class="col-md-4">

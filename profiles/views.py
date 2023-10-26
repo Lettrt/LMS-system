@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from courses.models import Course
 from .forms import StudentProfileEditForm
-from .models import Student
+from .models import Student, Teacher
 
 
 class StudentDetailView(DetailView):
@@ -70,3 +70,14 @@ class StudentListView(ListView):
         context['courses'] = Course.objects.all()
         
         return context
+    
+
+class TeacherListView(ListView):
+    model = Teacher
+    template_name = 'profiles/teacher_list.html'
+    context_object_name = 'teachers'
+
+class TeacherDetailView(DetailView):
+    model = Teacher
+    template_name = 'profiles/teacher_detail.html'
+    context_object_name = 'teacher'

@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-4">
+            <h1>{{ teacher.first_name }} {{ teacher.last_name }}</h1>
+            <p><strong>Язык программирования:</strong> {{ teacher.course.title }}</p>
+            <p><strong>Дата рождения:</strong> {{ teacher.date_of_bith }}</p>
+            <p><strong>О себе:</strong> {{ teacher.bio }}</p>
+            <h3>Уроки</h3>
+            <ul>
+                пример
+            </ul>
+            <h3>Домашние задания</h3>
+            <ul>
+                пример
+            </ul>
+            <h3>Прогресс</h3>
+            <p>Здесь будет отображаться прогресс студента.</p>
+
+            <h3>Средний балл</h3>
+            <p>Здесь будет отображаться средний балл студента.</p>
+        </div>
+        <div class="col-md-4">
+            <h4 class="text-center">Последие выполненные задания</h2>
+        </div>
+        <div class="col-md-4">
+            {% if teacher.photo %}
+            <img src="{{ teacher.photo.url }}" alt="{{ teacher.first_name }}" width="200"
+                class="img-fluid rounded mb-3">
+            {% else %}
+            <p>Фотографии нет</p>
+            {% endif %}
+            {% if user == object.user %}
+            <p><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                    Редактировать профиль
+                </button></p>
+            {% endif %}
+            <p><strong><img src="{% static 'img/envelope-solid.svg' %}
+                " alt="email" width="20" class="pe-2">Email:</strong> {{ teacher.email }}</p>
+            <p><strong><img src="{% static 'img/phone-solid.svg' %}
+                " alt="phone" width="20" class="pe-2">Телефон:</strong> {{ teacher.phone_number }}</p>
+            <div class="d-flex align-items-center">
+                <a href="{{ teacher.linked_in }}" target="_blank"><img src="{% static 'img/linkedin.svg' %}
+                    " alt="LinkedIn" width="44"></a>
+                <a href="{{ teacher.face_book }}" target="_blank" class="mx-4"><img
+                        src="{% static 'img/facebook.svg' %}" alt="Facebook" width="44"></a>
+                <a href="{{ teacher.instagram }}" target="_blank"><img src="{% static 'img/instagram.svg' %}"
+                        alt="Instagram" width="44"></a>
+                <a href="{{ teacher.instagram }}" target="_blank" class="pe-4"></a><img
+                    src="{% static 'img/github.svg' %}" alt="Instagram" width="44"></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

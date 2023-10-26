@@ -26,7 +26,8 @@
             <div class="col-md-10">
                 <div class="row d-flex align-items-center justify-content-start">
                     <div class="col-2 d-flex align-items-center">
-                        <img src="{% static 'img/LogoIT.png' %}" alt="" class="img-fluid w-75">
+                        <a href="{% url 'course_list' %}"><img src="{% static 'img/LogoIT.png' %}" alt=""
+                                class="img-fluid w-75"></a>
                     </div>
                     <div
                         class="col-1 d-flex align-items-center justify-content-center border border-success p-2 mb-2 rounded-4 mx-3">
@@ -39,11 +40,11 @@
                     </div>
                     <div
                         class="col-1 d-flex align-items-center justify-content-center border border-success p-2 mb-2 rounded-4 mx-3">
-                        <a aria-current="page" href="{% url 'course_list' %}"
+                        <a aria-current="page" href="{% url 'student_list' %}"
                             class="d-flex flex-column align-items-center justify-content-center">
-                            <img src="{% static 'img/course.jpg' %}" alt="" class="img-fluid w-75">
+                            <img src="{% static 'img/students.png' %}" alt="" class="img-fluid w-75">
                             <br>
-                            Курсы
+                            Студенты
                         </a>
                     </div>
                     <div
@@ -91,7 +92,8 @@
             <div class="col-md-10">
                 <div class="row d-flex align-items-center justify-content-start">
                     <div class="col-3 d-flex align-items-center">
-                        <img src="{% static 'img/LogoIT.png' %}" alt="" class="img-fluid w-75">
+                        <a href="{% url 'course_list' %}"><img src="{% static 'img/LogoIT.png' %}" alt=""
+                                class="img-fluid w-75"></a>
                     </div>
 
                     <div class="col d-flex align-items-center justify-content-center">
