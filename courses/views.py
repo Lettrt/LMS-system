@@ -6,8 +6,6 @@ from .models import Course, Rating, Comment
 from .forms import CourseApplicationForm
 from tg_bot.main import send_telegram_notification
 
-
-
 class CourseListView(ListView):
     model = Course
     template_name = 'courses/course_list.html'
