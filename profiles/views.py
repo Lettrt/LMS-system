@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from courses.models import Course
 from .forms import StudentProfileEditForm
 from .models import Student, Teacher
+from user_messages.forms import MessageForm
 
 
 class StudentDetailView(DetailView):
@@ -17,7 +18,32 @@ class StudentDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form'] = StudentProfileEditForm(instance=self.object)
+        context['message_form'] = MessageForm()
         return context
+    
+    def post(self, request, *args, **kwargs):
+            self.object = self.get_object()
+            message_form = MessageForm(request.POST)
+            if message_form.is_valid():
+                message = message_form.save(commit=False)
+
+                # Определите, кто отправляет сообщение
+                if hasattr(request.user, 'student_profile'):
+                    message.sender_student = request.user.student_profile
+                elif hasattr(request.user, 'teacher_profile'):
+                    message.sender_teacher = request.user.teacher_profile
+                elif hasattr(request.user, 'manager_profile'):
+                    message.sender_manager = request.user.manager_profile
+
+                # Так как сообщение отправляется студенту
+                message.receiver_student = self.object
+                
+                message.save()
+                return redirect('student_detail', pk=self.object.pk)
+            else:
+                context = self.get_context_data()
+                context['message_form'] = message_form
+                return render(request, self.template_name, context)
 
 @login_required
 def edit_student_profile(request, pk):

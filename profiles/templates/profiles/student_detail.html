@@ -36,7 +36,15 @@
             <p><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
                     Редактировать профиль
                 </button></p>
+            <a href="{% url 'message_list' %}">
+                <p><strong>Мои сообщения</strong></p>
+            </a>
             {% endif %}
+            <form method="post" action="{% url 'student_detail' student.id %}">
+                {% csrf_token %}
+                {{ message_form.as_p }}
+                <button type="submit">Отправить сообщение</button>
+            </form>
             <p><strong><img src="{% static 'img/envelope-solid.svg' %}
                 " alt="email" width="20" class="pe-2">Email:</strong> {{ student.email }}</p>
             <p><strong><img src="{% static 'img/phone-solid.svg' %}

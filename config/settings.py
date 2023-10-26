@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     # users apps
     'courses',
     'profiles',
+    'user_messages',
 ]
 
 MIDDLEWARE = [

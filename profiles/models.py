@@ -2,6 +2,7 @@ import os
 from django.db import models
 from django.contrib.auth.models import User
 
+
 def get_upload_name(instance: models.Model, filename: str) -> str:
     '''
     Generates a new filename for uploaded images
@@ -42,6 +43,7 @@ class UserProfile(models.Model):
 class Student(UserProfile):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student_profile')
     course = models.ForeignKey('courses.Course', on_delete=models.SET_NULL, null=True)
+    
     
     
     class Meta:

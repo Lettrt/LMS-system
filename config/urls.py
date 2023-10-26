@@ -10,6 +10,7 @@ urlpatterns = [
     path('account/api/', include('account.api.urls')),
     path('profiles/', include('profiles.urls')),
     path('', include('courses.urls')),
+    path('', include('user_messages.urls')),
     re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ]
 

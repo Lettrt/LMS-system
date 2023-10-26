@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Your Messages</h2>
+  <ul>
+    {% for message in object_list %}
+      <li>
+        <a href="{% url 'message_detail' message.id %}">
+          {{ message.content|truncatechars:30 }}
+        </a>
+        <p>From: {{ message.sender }}</p>
+        <p>To: {{ message.receiver }}</p>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}
