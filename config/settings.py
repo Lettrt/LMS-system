@@ -1,5 +1,17 @@
 import os
+import csv
+import logging
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
+
+class CSVDjangoFormatter(logging.Formatter):
+    def format(self, record):
+        return {
+            'level': record.levelname,
+            'timestamp': self.formatTime(record),
+            'message': record.getMessage(),
+        }
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -155,17 +167,23 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
-        'file': {
-            'level': 'DEBUG',  
+        'csv': {
+            'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': 'django.log',
+            'filename': 'django.log.csv',
         },
     },
     'loggers': {
         'django': {
-            'handlers': ['file'],
-            'level': 'DEBUG', 
+            'handlers': ['csv'],
+            'level': 'DEBUG',
             'propagate': True,
+        },
+    },
+    'formatters': {
+        'csv': {
+            '()': CSVDjangoFormatter,
+            'format': '%(levelname)s,%(timestamp)s,%(message)s',
         },
     },
 }

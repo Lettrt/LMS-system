@@ -19,6 +19,19 @@ class StudentDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['form'] = StudentProfileEditForm(instance=self.object)
         context['message_form'] = NewMessageForm()
+
+        context['partner_id'] = self.object.user_id
+
+
+        if hasattr(self.request.user, 'student_profile'):
+            context['partner_role'] = 'student'
+        elif hasattr(self.request.user, 'teacher_profile'):
+            context['partner_role'] = 'teacher'
+        elif hasattr(self.request.user, 'manager_profile'):
+            context['partner_role'] = 'manager'
+        else:
+            context['partner_role'] = None
+
         return context
     
     def post(self, request, *args, **kwargs):

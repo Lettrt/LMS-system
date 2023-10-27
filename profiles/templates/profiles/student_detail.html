@@ -40,11 +40,8 @@
                 <p><strong>Мои сообщения</strong></p>
             </a>
             {% endif %}
-            <form method="post" action="{% url 'student_detail' student.id %}">
-                {% csrf_token %}
-                {{ message_form.as_p }}
-                <button type="submit">Отправить сообщение</button>
-            </form>
+            <a href="{% url 'message_detail' partner_role partner_id %}" class="btn btn-primary">Написать сообщение</a>
+
             <p><strong><img src="{% static 'img/envelope-solid.svg' %}
                 " alt="email" width="20" class="pe-2">Email:</strong> {{ student.email }}</p>
             <p><strong><img src="{% static 'img/phone-solid.svg' %}

@@ -7,6 +7,10 @@ from profiles.models import Student, Teacher, Manager
 from .models import PrivateMessage
 from .forms import NewMessageForm
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 class Chat:
     def __init__(self, partner, latest_message, partner_role):
         self.partner = partner
@@ -41,6 +45,9 @@ class MessageListView(ListView):
         messages_received = PrivateMessage.objects.filter(receiver=current_profile.user)
         messages_sent = PrivateMessage.objects.filter(sender=current_profile.user)
 
+        logger.debug('Messages Received Query: %s', messages_received.query)
+        logger.debug('Messages Sent Query: %s', messages_sent.query)
+
         for msg in messages_received:
             if msg.sender not in partners:
                 partners.add(msg.sender)
@@ -59,6 +66,8 @@ class MessageListView(ListView):
                 ).latest('-timestamp')
                 chats.append(Chat(msg.receiver, latest_message, role))
 
+        logger.debug('Chats: %s', chats)
+
         return chats
 
     def get_context_data(self, **kwargs):
@@ -68,16 +77,22 @@ class MessageListView(ListView):
             for chat in context['chats']:
                 partner_id = chat.partner_id
                 partner_role = chat.partner_role
-                print(f"Partner ID: {partner_id}, Partner Role: {partner_role}")  # Debug output
+
+                logger.debug(f"Partner ID: {partner_id}, Partner Role: {partner_role}")  # Debug output
+
                 partner = None
                 student = self.request.user.student_profile
                 context['student'] = student
-                if partner_role == 'student':
-                    partner = Student.objects.get(id=partner_id).user
-                elif partner_role == 'teacher':
-                    partner = Teacher.objects.get(id=partner_id).user
-                elif partner_role == 'manager':
-                    partner = Manager.objects.get(id=partner_id).user
+                
+                try:
+                    if partner_role == 'student':
+                        partner = Student.objects.get(id=partner_id).user
+                    elif partner_role == 'teacher':
+                        partner = Teacher.objects.get(id=partner_id).user
+                    elif partner_role == 'manager':
+                        partner = Manager.objects.get(id=partner_id).user
+                except Exception as e:
+                    logger.error(f"Error retrieving partner from the database: {e}")
 
                 chat.partner_user = partner 
 
