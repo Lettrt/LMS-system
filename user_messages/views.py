@@ -68,6 +68,7 @@ class MessageListView(ListView):
             for chat in context['chats']:
                 partner_id = chat.partner_id
                 partner_role = chat.partner_role
+                print(f"Partner ID: {partner_id}, Partner Role: {partner_role}")  # Debug output
                 partner = None
                 student = self.request.user.student_profile
                 context['student'] = student
