@@ -1,16 +1,44 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>Your Messages</h2>
-  <ul>
-    {% for message in object_list %}
-      <li>
-        <a href="{% url 'message_detail' message.id %}">
-          {{ message.content|truncatechars:30 }}
-        </a>
-        <p>From: {{ message.sender }}</p>
-        <p>To: {{ message.receiver }}</p>
-      </li>
-    {% endfor %}
-  </ul>
+<div class="container mt-4">
+  <h2>Мои чаты</h2>
+  <div class="col-md-4">
+    <div style="height: 600px; overflow-y: auto;">
+      {% for chat in chats %}
+      <div class="mb-4 mt-4 d-flex align-items-start border border-primary-subtle rounded-pill">
+        <div class="d-flex align-items-center p-2">
+          <a href="{% url 'message_detail' chat.partner_role chat.partner_id %}">
+            {% if chat.partner_role == 'student' %}
+            <img src="{{ chat.partner.student_profile.photo.url }}" alt="{{ chat.partner.first_name }}"
+              class="rounded-circle img-fluid" style="width: 150px; height: 150px;">
+            {% elif chat.partner_role == 'teacher' %}
+            <img src="{{ chat.partner.teacher_profile.photo.url }}" alt="{{ chat.partner.first_name }}"
+              class="rounded-circle img-fluid" style="width: 150px; height: 150px;">
+            {% elif chat.partner_role == 'manager' %}
+            <img src="{{ chat.partner.manager_profile.photo.url }}" alt="{{ chat.partner.first_name }}"
+              class="rounded-circle img-fluid" style="width: 150px; height: 150px;">
+            {% endif %}
+          </a>
+          <div class="ms-3">
+            {% if chat.partner_role == 'student' %}
+            <strong>{{ chat.partner.student_profile.first_name }} {{ chat.partner.student_profile.last_name }}</strong>
+            <span class="d-block">({{ chat.partner.student_profile.course.title }})</span>
+            {% elif chat.partner_role == 'teacher' %}
+            <strong>{{ chat.partner.teacher_profile.first_name }} {{ chat.partner.teacher_profile.last_name }}</strong>
+            <span class="d-block">({{ chat.partner.teacher_profile.course.title }})</span>
+            {% elif chat.partner_role == 'manager' %}
+            <strong>{{ chat.partner.manager_profile.first_name }} {{ chat.partner.manager_profile.last_name }}</strong>
+            {% endif %}
+            <p>{{ chat.latest_message.content|truncatechars:30 }}</p>
+            <small class="text-muted">Last message on: {{ chat.latest_message.timestamp }}</small>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <p>No chats available.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
 {% endblock %}

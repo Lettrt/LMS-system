@@ -1,8 +1,54 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>Message Detail</h2>
-  <p>From: {{ object.sender }}</p>
-  <p>To: {{ object.receiver }}</p>
-  <p>Content: {{ object.content }}</p>
+<div class="container mt-5">
+  <h2>Переписка с
+    {% if chat.partner_role == 'student' %}
+    {{ chat.partner.student_profile.first_name }} {{ chat.partner.student_profile.last_name }}
+    {% elif chat.partner_role == 'teacher' %}
+    {{ chat.partner.teacher_profile.first_name }} {{ chat.partner.teacher_profile.last_name }}
+    {% elif chat.partner_role == 'manager' %}
+    {{ chat.partner.manager_profile.first_name }} {{ chat.partner.manager_profile.last_name }}
+    {% endif %}
+  </h2>
+
+  <div class="row mt-4">
+    <!-- Messages -->
+    <div class="col-md-8 overflow-auto" style="height: 600px;">
+      {% for message in messages %}
+      <div class="card mb-4 border-primary">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            {% if message.sender_student %}
+            <strong>{{ message.sender_student.user.username }}</strong>
+            {% elif message.sender_teacher %}
+            <strong>{{ message.sender_teacher.user.username }}</strong>
+            {% elif message.sender_manager %}
+            <strong>{{ message.sender_manager.user.username }}</strong>
+            {% endif %}
+            <small class="text-muted">{{ message.timestamp }}</small>
+          </div>
+          <p class="mt-2">{{ message.content }}</p>
+        </div>
+      </div>
+      {% empty %}
+      <p>No messages yet. Start the conversation!</p>
+      {% endfor %}
+    </div>
+
+    <!-- Input Form -->
+    <div class="col-md-4">
+      <form method="post" class="border p-4 rounded">
+        {% csrf_token %}
+        <div class="form-group">
+          {{ form.content.label_tag }}
+          <input type="text" name="content" class="form-control" value="{{ form.content.value|default:'' }}" required>
+
+          <!-- This will render the input field with Bootstrap class -->
+        </div>
+        <button type="submit" class="btn btn-primary">Send</button>
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}
