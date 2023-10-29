@@ -40,9 +40,10 @@
                 <p><strong>Мои сообщения</strong></p>
             </a>
             {% endif %}
+            <br>
             <a href="{% url 'message_detail' partner_role partner_id %}" class="btn btn-primary">Написать сообщение</a>
 
-            <p><strong><img src="{% static 'img/envelope-solid.svg' %}
+            <p class="mt-4"><strong><img src="{% static 'img/envelope-solid.svg' %}
                 " alt="email" width="20" class="pe-2">Email:</strong> {{ student.email }}</p>
             <p><strong><img src="{% static 'img/phone-solid.svg' %}
                 " alt="phone" width="20" class="pe-2">Телефон:</strong> {{ student.phone_number }}</p>

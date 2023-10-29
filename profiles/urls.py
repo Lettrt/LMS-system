@@ -8,5 +8,7 @@ urlpatterns = [
     path('redirect_to_student_detail/', views.redirect_to_student_detail, name='redirect_to_student_detail'),
     path('teachers/', views.TeacherListView.as_view(), name='teacher_list'),
     path('teachers/<int:pk>/', views.TeacherDetailView.as_view(), name='teacher_detail'),
+    path('teachers/edit/<int:pk>/', views.edit_teacher_profile, name='edit_teacher_profile'),
+    path('redirect_to_teacher_detail/', views.redirect_to_teacher_detail, name='redirect_to_teacher_detail'),
 
 ]

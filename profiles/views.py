@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from courses.models import Course
-from .forms import StudentProfileEditForm
+from .forms import StudentProfileEditForm, TeacherProfileEditForm
 from .models import Student, Teacher
 from user_messages.forms import NewMessageForm
 
@@ -115,3 +115,64 @@ class TeacherDetailView(DetailView):
     model = Teacher
     template_name = 'profiles/teacher_detail.html'
     context_object_name = 'teacher'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = TeacherProfileEditForm(instance=self.object)
+        context['message_form'] = NewMessageForm()
+
+        context['partner_id'] = self.object.user_id
+
+
+        if hasattr(self.request.user, 'student_profile'):
+            context['partner_role'] = 'student'
+        elif hasattr(self.request.user, 'teacher_profile'):
+            context['partner_role'] = 'teacher'
+        elif hasattr(self.request.user, 'manager_profile'):
+            context['partner_role'] = 'manager'
+        else:
+            context['partner_role'] = None
+
+        return context
+    
+    def post(self, request, *args, **kwargs):
+            self.object = self.get_object()
+            message_form = NewMessageForm(request.POST)
+            if message_form.is_valid():
+                message = message_form.save(commit=False)
+                if hasattr(request.user, 'student_profile'):
+                    message.sender_student = request.user.student_profile
+                elif hasattr(request.user, 'teacher_profile'):
+                    message.sender_teacher = request.user.teacher_profile
+                elif hasattr(request.user, 'manager_profile'):
+                    message.sender_manager = request.user.manager_profile
+                message.receiver_student = self.object      
+                message.save()
+                return redirect('teacher_detail', pk=self.object.pk)
+            else:
+                context = self.get_context_data()
+                context['message_form'] = message_form
+                return render(request, self.template_name, context)
+            
+@login_required
+def edit_teacher_profile(request, pk):
+    teacher = Teacher.objects.get(pk=pk)
+
+    if request.user != teacher.user:
+        return redirect('teacher_detail', pk=pk)
+
+    if request.method == "POST":
+        form = TeacherProfileEditForm(request.POST, request.FILES, instance=teacher)
+        if form.is_valid():
+            form.save()
+            return redirect('teacher_detail', pk=pk)
+    else:
+        form = TeacherProfileEditForm(instance=teacher)
+
+    context = {'form': form, 'teacher': teacher}
+    print(form)
+    return render(request, 'profiles/teacher_detail.html', context)
+
+def redirect_to_teacher_detail(request):
+    teacher = get_object_or_404(Teacher, user_id=request.user.id)
+    return redirect('teacher_detail', pk=teacher.id)

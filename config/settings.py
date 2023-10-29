@@ -132,7 +132,7 @@ DJOSER = {
     'SERIALIZERS': {},
 }
 
-LOGIN_REDIRECT_URL = 'redirect_to_student_detail'
+LOGIN_REDIRECT_URL = 'custom_redirect'
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
 
@@ -168,7 +168,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'handlers': {
         'csv': {
-            'level': 'DEBUG',
+            'level': 'WARNING',
             'class': 'logging.FileHandler',
             'filename': 'django.log.csv',
         },
@@ -176,7 +176,7 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['csv'],
-            'level': 'DEBUG',
+            'level': 'WARNING',
             'propagate': True,
         },
     },

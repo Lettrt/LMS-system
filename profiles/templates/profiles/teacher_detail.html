@@ -36,8 +36,14 @@
             <p><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
                     Редактировать профиль
                 </button></p>
+            <a href="{% url 'message_list' %}">
+                <p><strong>Мои сообщения</strong></p>
+            </a>
             {% endif %}
-            <p><strong><img src="{% static 'img/envelope-solid.svg' %}
+            <br>
+            <a href="{% url 'message_detail' partner_role partner_id %}" class="btn btn-primary">Написать сообщение</a>
+
+            <p class="mt-4"><strong><img src="{% static 'img/envelope-solid.svg' %}
                 " alt="email" width="20" class="pe-2">Email:</strong> {{ teacher.email }}</p>
             <p><strong><img src="{% static 'img/phone-solid.svg' %}
                 " alt="phone" width="20" class="pe-2">Телефон:</strong> {{ teacher.phone_number }}</p>
@@ -55,4 +61,78 @@
     </div>
 </div>
 
+<!-- MODAL WINDOW -->
+{% if user == object.user %}
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProfileModalLabel">Редактирование профиля</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" enctype="multipart/form-data" action="{% url 'edit_teacher_profile' object.pk %}">
+                <div class="modal-body">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label for="{{ form.email.id_for_label }}">Email</label>
+                        <input type="email" class="form-control" id="{{ form.email.id_for_label }}" name="email"
+                            value="{{ teacher.email }}" maxlength="255" minlength="10"
+                            pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}">
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.date_of_bith.id_for_label }}">Дата рождения</label>
+                        <input type="date" class="form-control" id="{{ form.date_of_bith.id_for_label }}"
+                            name="date_of_bith" value="{{ teacher.date_of_bith|date:'Y-m-d' }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.phone_number.id_for_label }}">Телефон</label>
+                        <input type="text" class="form-control" id="{{ form.phone_number.id_for_label }}"
+                            name="phone_number" value="{{ teacher.phone_number }}" minlength="10" maxlength="20">
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <label for="{{ form.photo.id_for_label }}">Фото</label>
+                        {% if teacher.photo %}
+                        <div class="mb-2">
+                            <img src="{{ teacher.photo.url }}" alt="Текущее фото"
+                                style="max-width: 150px; max-height: 150px;">
+                        </div>
+                        {% endif %}
+                        <input type="file" class="form-control-file" id="{{ form.photo.id_for_label }}" name="photo">
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <label for="{{ form.bio.id_for_label }}">О себе</label>
+                        <textarea class="form-control" id="{{ form.bio.id_for_label }}" name="bio"
+                            maxlength="5000">{{ teacher.bio }}</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.linked_in.id_for_label }}">LinkedIn</label>
+                        <input type="url" class="form-control" id="{{ form.linked_in.id_for_label }}" name="linked_in"
+                            value="{{ teacher.linked_in }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.face_book.id_for_label }}">Facebook</label>
+                        <input type="url" class="form-control" id="{{ form.face_book.id_for_label }}" name="face_book"
+                            value="{{ teacher.face_book }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.instagram.id_for_label }}">Instagram</label>
+                        <input type="url" class="form-control" id="{{ form.instagram.id_for_label }}" name="instagram"
+                            value="{{ teacher.instagram }}">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
 {% endblock %}

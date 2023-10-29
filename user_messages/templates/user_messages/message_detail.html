@@ -13,22 +13,29 @@
   </h2>
 
   <div class="row mt-4">
-    <!-- Messages -->
     <div class="col-md-8 overflow-auto" style="height: 600px;">
       {% for message in messages %}
-      <div class="card mb-4 border-primary">
-        <div class="card-body">
-          <div class="d-flex justify-content-between">
-            {% if message.sender_student %}
-            <strong>{{ message.sender_student.user.username }}</strong>
-            {% elif message.sender_teacher %}
-            <strong>{{ message.sender_teacher.user.username }}</strong>
-            {% elif message.sender_manager %}
-            <strong>{{ message.sender_manager.user.username }}</strong>
-            {% endif %}
-            <small class="text-muted">{{ message.timestamp }}</small>
+      <div
+        style="display: flex; align-items: start; {% if message.sender == request.user %}justify-content: flex-end;{% else %}justify-content: flex-start;{% endif %} margin-bottom: 10px;">
+        <img
+          src="{% if message.sender == request.user %}{{ message.sender.student_profile.photo.url }}{% else %}{{ message.sender.student_profile.photo.url }}{% endif %}"
+          style="width: 100px; height: 100px; {% if message.sender == request.user %}margin-left: 10px;{% else %}margin-right: 10px;{% endif %}">
+        <div class="card mb-4 border-primary">
+          <div class="card-body">
+            <div class="d-flex justify-content-between">
+              <strong>
+                {% if message.sender.student_profile %}
+                {{ message.sender.student_profile.first_name }} {{ message.sender.student_profile.last_name }}
+                {% elif message.sender.teacher_profile %}
+                {{ message.sender.teacher_profile.first_name }} {{ message.sender.teacher_profile.last_name }}
+                {% elif message.sender.manager_profile %}
+                {{ message.sender.manager_profile.first_name }} {{ message.sender.manager_profile.last_name %}
+                  {% endif %}
+                </strong>
+                <small class="text-muted">{{ message.timestamp }}</small>
+            </div>
+            <p class="mt-2">{{ message.content }}</p>
           </div>
-          <p class="mt-2">{{ message.content }}</p>
         </div>
       </div>
       {% empty %}
@@ -36,17 +43,16 @@
       {% endfor %}
     </div>
 
-    <!-- Input Form -->
     <div class="col-md-4">
       <form method="post" class="border p-4 rounded">
         {% csrf_token %}
         <div class="form-group">
           {{ form.content.label_tag }}
-          <input type="text" name="content" class="form-control" value="{{ form.content.value|default:'' }}" required>
-
-          <!-- This will render the input field with Bootstrap class -->
+          <input type="text" name="content" class="form-control" value="{{ form.content.value|default:'' }}" required
+            style="height: 300px;">
         </div>
-        <button type="submit" class="btn btn-primary">Send</button>
+        <br>
+        <button type="submit" class="btn btn-primary">Отправть сообщение</button>
       </form>
     </div>
   </div>
