@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ lesson.title }}</h2>
+    <div class="form-floating">
+        <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2"
+            style="height: 400px; white-space: pre-wrap;" readonly>{{ lesson.content }}</textarea>
+        <label for="floatingTextarea2"></label>
+        {% if lesson.media %}
+        <div class="row">
+            <div class="col-6">
+                <video src="{{ lesson.media.url }}" class="object-fit-contain" style="width: 550px;" controls></video>
+                {% else %}
+                <p>Видео ещё нет нет</p>
+                {% endif %}
+            </div>
+            <div class="col-6">
+                {% if completed %}
+                <h2 class="text-center">Поздравляем!</h2>
+                <br>
+                <p class="text-center"><strong>Урок завершен!</strong></p>
+                <p class="text-center"><strong>Не забудьте сделать домашнее задание!</strong></p>
+                <div class="d-flex flex-column justify-content-end align-items-center">
+                    <a href="{% url 'mark_as_completed' lesson.id %}"><button type="button" class="btn btn-info">К
+                            домашнему
+                            заданию!</button></a>
+                </div>
+                {% else %}
+                <a href="{% url 'mark_as_completed' lesson.id %}"><button type="button"
+                        class="btn btn-success bi bi-check-circle">Урок пройден!</button></a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <br>
+
+
+</div>
+{% endblock %}

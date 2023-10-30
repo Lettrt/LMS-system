@@ -4,5 +4,8 @@ from . import views
 urlpatterns = [
     path('', views.LessonListView.as_view(), name='lessons'),
     path('weeks/<int:month_id>/', views.WeekListView.as_view(), name='weeks'),
+    path('lesson/<int:lesson_id>/', views.LessonDetailView.as_view(), name='lesson_detail'),
+    path('lesson/<int:lesson_id>/completed/', views.mark_as_completed, name='mark_as_completed'),
+
 
 ]

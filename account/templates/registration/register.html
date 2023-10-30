@@ -1,10 +1,58 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Регистрация</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ user_form.as_p }}
-    <button type="submit">Регистрация</button>
-</form>
+<h1 class="text-center">Регистрация</h1>
+{% if user_form.errors %}
+<div class="d-flex justify-content-center align-items-center">
+    <div class="alert alert-danger" style="width: 550px;" role="alert">
+        {{ user_form.errors }}
+    </div>
+</div>
+{% endif %}
+<div class="d-flex justify-content-center align-items-center mt-3">
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3" style="width: 550px;">
+            <label for="id_username" class="form-label">Имя пользователя</label>
+            <input type="text" class="form-control" id="id_username" name="username"
+                value="{{ user_form.username.value|default:'' }}" maxlength="100" minlength="3" required>
+        </div>
+        <div class="mb-3" style="width: 550px;">
+            <label for="id_first_name" class="form-label">Имя</label>
+            <input type="text" class="form-control" id="id_first_name" name="first_name"
+                value="{{ user_form.first_name.value|default:'' }}" maxlength="100" minlength="2">
+        </div>
+        <div class="mb-3" style="width: 550px;">
+            <label for="id_last_name" class="form-label">Фамилия</label>
+            <input type="text" class="form-control" id="id_last_name" name="last_name"
+                value="{{ user_form.last_name.value|default:'' }}" maxlength="100" minlength="2">
+        </div>
+        <div class="mb-3" style="width: 550px;">
+            <label for="id_email" class="form-label">Email адрес</label>
+            <input type="email" class="form-control" id="id_email" name="email"
+                value="{{ user_form.email.value|default:'' }}" maxlength="100" minlength="5"
+                pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" required>
+        </div>
+        <div class="mb-3" style="width: 550px;">
+            <label for="id_password" class="form-label">Пароль</label>
+            <input type="password" class="form-control" id="id_password" name="password" required>
+        </div>
+        <div class="mb-3" style="width: 550px;">
+            <label for="id_password2" class="form-label">Повторите пароль</label>
+            <input type="password" class="form-control" id="id_password2" name="password2" required>
+        </div>
+        <div class="mb-3" style="width: 550px;">
+            <label for="id_profile_type" class="form-label">Тип профиля</label>
+            <select class="form-control" id="id_profile_type" name="profile_type">
+                {% for value, label in user_form.profile_type.field.choices %}
+                <option value="{{ value }}" {% if user_form.profile_type.value == value %}selected{% endif %}>
+                    {{ label }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Регистрация</button>
+    </form>
+</div>
 {% endblock %}
