@@ -39,6 +39,8 @@ class WeekListView(ListView):
         context['lessons_per_week'] = lessons_per_week
         if self.request.user.is_authenticated and hasattr(self.request.user, 'student_profile'):
             context['student'] = self.request.user.student_profile
+            completed_lessons = Progress.objects.filter(student=context['student'], completed=True).values_list('lesson_id', flat=True)
+            context['completed_lessons'] = completed_lessons
         return context
 
 class LessonDetailView(DetailView):

@@ -37,7 +37,7 @@ class Lesson(models.Model):
     class Meta:
         verbose_name = "Урок"
         verbose_name_plural = "Уроки"
-        ordering = ["week"]
+        ordering = ["title"]
 
     def __str__(self):
         return f'{self.title} {self.week}.' 
