@@ -17,8 +17,23 @@
       {% for message in messages %}
       <div
         style="display: flex; align-items: start; {% if message.sender == request.user %}justify-content: flex-end;{% else %}justify-content: flex-start;{% endif %} margin-bottom: 10px;">
-        <img
-          src="{% if message.sender == request.user %}{{ message.sender.student_profile.photo.url }}{% else %}{{ message.sender.student_profile.photo.url }}{% endif %}"
+        <img src="{% if message.sender == request.user %}
+    {% if request.user.student_profile %}
+        {{ message.sender.student_profile.photo.url }}
+    {% elif request.user.teacher_profile %}
+        {{ message.sender.teacher_profile.photo.url }}
+    {% elif request.user.manager_profile %}
+        {{ message.sender.manager_profile.photo.url }}
+    {% endif %}
+{% else %}
+    {% if message.sender.student_profile %}
+        {{ message.sender.student_profile.photo.url }}
+    {% elif message.sender.teacher_profile %}
+        {{ message.sender.teacher_profile.photo.url }}
+    {% elif message.sender.manager_profile %}
+        {{ message.sender.manager_profile.photo.url }}
+    {% endif %}
+{% endif %}"
           style="width: 100px; height: 100px; {% if message.sender == request.user %}margin-left: 10px;{% else %}margin-right: 10px;{% endif %}">
         <div class="card mb-4 border-primary">
           <div class="card-body">
@@ -29,10 +44,10 @@
                 {% elif message.sender.teacher_profile %}
                 {{ message.sender.teacher_profile.first_name }} {{ message.sender.teacher_profile.last_name }}
                 {% elif message.sender.manager_profile %}
-                {{ message.sender.manager_profile.first_name }} {{ message.sender.manager_profile.last_name %}
-                  {% endif %}
-                </strong>
-                <small class="text-muted">{{ message.timestamp }}</small>
+                {{ message.sender.manager_profile.first_name }} {{ message.sender.manager_profile.last_name }}
+                {% endif %}
+              </strong>
+              <small class="text-muted">{{ message.timestamp }}</small>
             </div>
             <p class="mt-2">{{ message.content }}</p>
           </div>
