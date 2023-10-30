@@ -16,7 +16,8 @@
                             <span class="text-success">&#10003;</span>
                             {% endif %}
                             <a href="{% url 'lesson_detail' lesson.id %}">{{ lesson.title }}</a>
-                            {% if student and lesson.id in completed_lessons %}
+                        </p>
+                        <p> {% if student and lesson.id in completed_lessons %}
                             <span class="text-success">Урок пройден!</span>
                             {% endif %}
                         </p>

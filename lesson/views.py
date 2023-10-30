@@ -16,8 +16,23 @@ class LessonListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['months'] = Month.objects.all()
+        
+        # Получаем общее количество уроков для каждой недели
+        context['total_lessons_by_week'] = {week.id: week.lesson_set.count() for month in context['months'] for week in month.week_set.all()}
+
+        # Если пользователь авторизован, то получаем количество завершенных уроков
         if self.request.user.is_authenticated and hasattr(self.request.user, 'student_profile'):
-            context['student'] = self.request.user.student_profile
+            student = self.request.user.student_profile
+            completed_lessons = Progress.objects.filter(student=student, completed=True).values_list('lesson_id', flat=True)
+            
+            completed_by_week = {}
+            for month in context['months']:
+                for week in month.week_set.all():
+                    completed_for_week = sum(1 for lesson in week.lesson_set.all() if lesson.id in completed_lessons)
+                    completed_by_week[week.id] = completed_for_week
+            
+            context['completed_lessons_by_week'] = completed_by_week
+            
         return context
     
 class WeekListView(ListView):
