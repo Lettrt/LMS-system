@@ -1,11 +1,25 @@
 from django.views.generic import ListView, DetailView
 from django.db.models import Count
-from django.shortcuts import redirect,render
+from django.shortcuts import redirect, render
 import asyncio
 from .models import Course, Rating, Comment
 from .forms import CourseApplicationForm
 from profiles.models import Teacher
 from tg_bot.main import send_telegram_notification
+
+def get_user_profile(user):
+    role = None
+    profile = None
+    if hasattr(user, 'student_profile'):
+        profile = user.student_profile
+        role = 'student'
+    elif hasattr(user, 'teacher_profile'):
+        profile = user.teacher_profile
+        role = 'teacher'
+    elif hasattr(user, 'manager_profile'):
+        profile = user.manager_profile
+        role = 'manager'
+    return profile, role
 
 class CourseListView(ListView):
     model = Course
@@ -13,14 +27,13 @@ class CourseListView(ListView):
     context_object_name = 'courses'
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        queryset = queryset.annotate(student_count=Count('student'))
-        return queryset
+        return super().get_queryset().annotate(student_count=Count('student'))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if self.request.user.is_authenticated:
-            context['student'] = self.request.user.student_profile
+        profile, role = get_user_profile(self.request.user)
+        if role == 'student':
+            context['student'] = profile
         for course in context['courses']:
             course.top_comments = course.comments.all()[:3]
         return context
@@ -31,32 +44,28 @@ class CourseDetailView(DetailView):
     context_object_name = "course"
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        queryset = queryset.annotate(student_count=Count('student'))
-        return queryset
-    
+        return super().get_queryset().annotate(student_count=Count('student'))
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['mentors'] = Teacher.objects.filter(course=self.get_object())[:2]
-        if self.request.user.is_authenticated:
-            student = self.request.user.student_profile
-            current_rating = Rating.objects.filter(course=self.get_object(), student=student).first()
-            context['student'] = student
-            context['has_rated'] = has_student_rated_course(student, self.get_object())
+        profile, role = get_user_profile(self.request.user)
+        if role == 'student':
+            current_rating = Rating.objects.filter(course=self.get_object(), student=profile).first()
+            context['student'] = profile
+            context['has_rated'] = has_student_rated_course(profile, self.get_object())
         return context
-    
+
+def has_student_rated_course(student, course):
+    return Rating.objects.filter(student=student, course=course).exists()
+
 def add_comment(request):
     if request.method == 'POST':
         comment_text = request.POST['comment_text']
         course_id = request.POST.get('course_id')
         student_instance = request.user.student_profile
         Comment.objects.create(text=comment_text, student=student_instance, course_id=course_id)
-
-    return redirect('course_detail', pk=course_id)
-
-
-def has_student_rated_course(student, course):
-    return Rating.objects.filter(student=student, course=course).exists()
+        return redirect('course_detail', pk=course_id)
 
 def add_rating(request):
     if request.method == 'POST' and request.user.is_authenticated:
@@ -74,8 +83,7 @@ def add_rating(request):
                 rating.rating = rating_value
                 rating.save()
         except (ValueError, KeyError):
-            f'Рейтинг от 1 до 5'
-
+            pass
     return redirect('course_detail', pk=course_id)
 
 def course_application(request):
@@ -91,7 +99,6 @@ def course_application(request):
                 'message': application.message
             }
             asyncio.run(send_telegram_notification(contact_data))
-            
             return redirect('course_detail', pk=course_id)
     else:
         form = CourseApplicationForm()

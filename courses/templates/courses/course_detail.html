@@ -16,7 +16,7 @@
                     <p><strong>Количество студентов:</strong> {{ course.student_count }}</p>
                     <p><button type="button" class="btn btn-info" data-bs-toggle="modal"
                             data-bs-target="#courseApplicationModal">Записаться на курсы</button></p>
-                    {% if user.is_authenticated %}
+                    {% if user.is_authenticated and user.student_profile %}
                     <p><button type="button" class="btn btn-success" data-bs-toggle="modal"
                             data-bs-target="#ratingModal">Оценить</button></p>
                     {% endif %}
@@ -47,10 +47,11 @@
         </div>
         <div class="col-md-4">
             <h3>Комментарии</h3>
-            {% if user.is_authenticated %}
+            {% if user.is_authenticated and user.student_profile %}
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#commentModal">Оставить
                 комментарий</button>
             {% endif %}
+
 
             <!-- Begin fixed-height container for comments -->
             <div style="height: 600px; overflow-y: auto;">

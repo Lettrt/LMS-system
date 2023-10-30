@@ -9,6 +9,35 @@ from .forms import StudentProfileEditForm, TeacherProfileEditForm
 from .models import Student, Teacher
 from user_messages.forms import NewMessageForm
 
+def get_partner_role(user):
+    if hasattr(user, 'student_profile'):
+        return 'student'
+    elif hasattr(user, 'teacher_profile'):
+        return 'teacher'
+    elif hasattr(user, 'manager_profile'):
+        return 'manager'
+    else:
+        return None
+    
+def send_message(request, receiver):
+    message_form = NewMessageForm(request.POST)
+    if message_form.is_valid():
+        message = message_form.save(commit=False)
+        
+        sender_role = get_partner_role(request.user)
+        if sender_role == 'student':
+            message.sender_student = request.user.student_profile
+        elif sender_role == 'teacher':
+            message.sender_teacher = request.user.teacher_profile
+        elif sender_role == 'manager':
+            message.sender_manager = request.user.manager_profile
+        
+        message.receiver_student = receiver
+        message.save()
+        return True, message_form
+    return False, message_form
+
+
 
 class StudentDetailView(DetailView):
     model = Student
@@ -19,39 +48,19 @@ class StudentDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['form'] = StudentProfileEditForm(instance=self.object)
         context['message_form'] = NewMessageForm()
-
         context['partner_id'] = self.object.user_id
-
-
-        if hasattr(self.request.user, 'student_profile'):
-            context['partner_role'] = 'student'
-        elif hasattr(self.request.user, 'teacher_profile'):
-            context['partner_role'] = 'teacher'
-        elif hasattr(self.request.user, 'manager_profile'):
-            context['partner_role'] = 'manager'
-        else:
-            context['partner_role'] = None
-
+        context['partner_role'] = get_partner_role(self.request.user)
         return context
-    
+
     def post(self, request, *args, **kwargs):
-            self.object = self.get_object()
-            message_form = NewMessageForm(request.POST)
-            if message_form.is_valid():
-                message = message_form.save(commit=False)
-                if hasattr(request.user, 'student_profile'):
-                    message.sender_student = request.user.student_profile
-                elif hasattr(request.user, 'teacher_profile'):
-                    message.sender_teacher = request.user.teacher_profile
-                elif hasattr(request.user, 'manager_profile'):
-                    message.sender_manager = request.user.manager_profile
-                message.receiver_student = self.object      
-                message.save()
-                return redirect('student_detail', pk=self.object.pk)
-            else:
-                context = self.get_context_data()
-                context['message_form'] = message_form
-                return render(request, self.template_name, context)
+        self.object = self.get_object()
+        is_sent, message_form = send_message(request, self.object)
+        if is_sent:
+            return redirect('student_detail', pk=self.object.pk)
+        else:
+            context = self.get_context_data()
+            context['message_form'] = message_form
+            return render(request, self.template_name, context)
 
 @login_required
 def edit_student_profile(request, pk):
@@ -99,8 +108,9 @@ class StudentListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        if self.request.user.is_authenticated:
+        if self.request.user.is_authenticated and hasattr(self.request.user, 'student_profile'):
             context['student'] = self.request.user.student_profile
+
         context['courses'] = Course.objects.all()
         
         return context
@@ -120,39 +130,19 @@ class TeacherDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['form'] = TeacherProfileEditForm(instance=self.object)
         context['message_form'] = NewMessageForm()
-
         context['partner_id'] = self.object.user_id
-
-
-        if hasattr(self.request.user, 'student_profile'):
-            context['partner_role'] = 'student'
-        elif hasattr(self.request.user, 'teacher_profile'):
-            context['partner_role'] = 'teacher'
-        elif hasattr(self.request.user, 'manager_profile'):
-            context['partner_role'] = 'manager'
-        else:
-            context['partner_role'] = None
-
+        context['partner_role'] = get_partner_role(self.request.user)
         return context
-    
+
     def post(self, request, *args, **kwargs):
-            self.object = self.get_object()
-            message_form = NewMessageForm(request.POST)
-            if message_form.is_valid():
-                message = message_form.save(commit=False)
-                if hasattr(request.user, 'student_profile'):
-                    message.sender_student = request.user.student_profile
-                elif hasattr(request.user, 'teacher_profile'):
-                    message.sender_teacher = request.user.teacher_profile
-                elif hasattr(request.user, 'manager_profile'):
-                    message.sender_manager = request.user.manager_profile
-                message.receiver_student = self.object      
-                message.save()
-                return redirect('teacher_detail', pk=self.object.pk)
-            else:
-                context = self.get_context_data()
-                context['message_form'] = message_form
-                return render(request, self.template_name, context)
+        self.object = self.get_object()
+        is_sent, message_form = send_message(request, self.object)
+        if is_sent:
+            return redirect('teacher_detail', pk=self.object.pk)
+        else:
+            context = self.get_context_data()
+            context['message_form'] = message_form
+            return render(request, self.template_name, context)
             
 @login_required
 def edit_teacher_profile(request, pk):
