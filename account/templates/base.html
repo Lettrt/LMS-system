@@ -109,11 +109,11 @@
             <div class="col-md-1 d-flex justify-content-end align-items-center">
                 {% if request.user.is_authenticated %}
                 <a class="nav-link" aria-disabled="true" href="{% url 'logout' %}">
-                    <button type="button" class="btn btn-danger">Logout</button>
+                    <button type="button" class="btn btn-danger">Выйти</button>
                 </a>
                 {% else %}
                 <a class="nav-link" aria-disabled="true" href="{% url 'login' %}">
-                    <button type="button" class="btn btn-success">Log-in</button>
+                    <button type="button" class="btn btn-success">Войти</button>
                 </a>
                 {% endif %}
             </div>

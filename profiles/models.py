@@ -1,4 +1,5 @@
 import os
+from transliterate import translit
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -13,8 +14,11 @@ def get_upload_name(instance: models.Model, filename: str) -> str:
     - str: The new path and filename where the image will be saved.
     '''
     base, extension = os.path.splitext(filename)
-    new_name = f'{instance.first_name}_{instance.last_name}_{instance.id}{extension}'
+    first_name_translit = translit(instance.first_name, 'ru', reversed=True)
+    last_name_translit = translit(instance.last_name, 'ru', reversed=True)
+    new_name = f'{first_name_translit}_{last_name_translit}_{instance.id}{extension}'
     return os.path.join('students/photo/', new_name)
+
 
 class UserProfile(models.Model):
     first_name = models.CharField(max_length=50)
@@ -22,7 +26,7 @@ class UserProfile(models.Model):
     email = models.EmailField(blank=True, null=True)
     date_of_bith = models.DateField(blank=True, null=True)
     phone_number = models.CharField(max_length=20, blank=True, null=True)
-    photo = models.ImageField(upload_to=get_upload_name, blank=True, null=True)
+    photo = models.ImageField(upload_to=get_upload_name, default='img/default_profile.png')
     bio = models.TextField(max_length=5000, blank=True, null=True)
     linked_in = models.URLField(blank=True, null=True)
     face_book = models.URLField(blank=True, null=True)

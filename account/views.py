@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from profiles.models import Student, Teacher, Manager
+from .forms import UserRegistrationForm
 
 @login_required
 def dashboard(request):
@@ -20,3 +21,26 @@ def custom_redirect(request):
         pk = user.manager_profile.pk
         return redirect('manager_detail', pk=pk)
     return redirect('dashboard')
+
+def register(request):
+    if request.method == 'POST':
+        user_form = UserRegistrationForm(request.POST)
+        if user_form.is_valid():
+            new_user = user_form.save(commit=False)
+            new_user.set_password(user_form.cleaned_data['password'])
+            new_user.save()
+            first_name = user_form.cleaned_data['first_name']
+            last_name = user_form.cleaned_data['last_name']
+            email = user_form.cleaned_data['email']
+            profile_type = user_form.cleaned_data['profile_type']
+            if profile_type == 'student':
+                Student.objects.create(user=new_user, first_name=first_name, last_name=last_name, email=email)
+            elif profile_type == 'teacher':
+                Teacher.objects.create(user=new_user, first_name=first_name, last_name=last_name, email=email)
+            elif profile_type == 'manager':
+                Manager.objects.create(user=new_user, first_name=first_name, last_name=last_name, email=email)
+
+            return render(request, 'registration/register_done.html', {'new_user': new_user})
+    else:
+        user_form = UserRegistrationForm()
+    return render(request, 'registration/register.html', {'user_form': user_form})
