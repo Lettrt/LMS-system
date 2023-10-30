@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        {% for month in months %}
+        <div class="col-md-3 mb-4">
+            <div class="card" style="width: 100%; height: 400px;">
+                <img src="{{ month.logo.url }}" class="card-img-top" alt="#" style="height: 60%; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title">{{ month.name }}</h5>
+                    <ul>
+                        {% for week in month.week_set.all %}
+                        <li><a href="#">{{ week.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

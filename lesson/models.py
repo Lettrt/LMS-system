@@ -4,6 +4,7 @@ from courses.models import Course
 
 class Month(models.Model):
     course = models.ForeignKey(Course, on_delete=models.SET_NULL, null=True)
+    logo = models.ImageField(upload_to=f'lesson/{course}/months/', blank=True, null=True)
     name = models.CharField(max_length=100)
 
     class Meta:
