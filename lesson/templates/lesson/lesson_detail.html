@@ -31,11 +31,36 @@
                 <a href="{% url 'mark_as_completed' lesson.id %}"><button type="button"
                         class="btn btn-success bi bi-check-circle">Урок пройден!</button></a>
                 {% endif %}
+                {% if is_teacher %}
+                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editLessonModal">
+                    Редактировать урок
+                </button>
+                {% endif %}
             </div>
         </div>
     </div>
     <br>
-
-
 </div>
+{% if is_teacher %}
+<div class="modal fade" id="editLessonModal" tabindex="-1" aria-labelledby="editLessonModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editLessonModalLabel">Редактировать урок</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
 {% endblock %}

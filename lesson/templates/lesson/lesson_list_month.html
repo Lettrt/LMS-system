@@ -14,8 +14,8 @@
                     <ul>
                         {% for week in month.week_set.all %}
                         <li><a href="{% url 'weeks' month_id=week.month_id %}">{{ week.name }}</a> -
-                            {{ completed_lessons_by_week|get:week.id|default:0 }}/
-                            {{ total_lessons_by_week|get:week.id|default:0 }}</li>
+                            {{ completed_lessons_by_week|get:week.id|default:0 }}/{{ total_lessons_by_week|get:week.id|default:0 }}
+                        </li>
                         {% endfor %}
                     </ul>
                 </div>
