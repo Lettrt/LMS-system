@@ -8,6 +8,8 @@ from courses.models import Course
 from .forms import StudentProfileEditForm, TeacherProfileEditForm
 from .models import Student, Teacher
 from user_messages.forms import NewMessageForm
+from lesson.models import Lesson, Progress
+
 
 def get_partner_role(user):
     if hasattr(user, 'student_profile'):
@@ -50,6 +52,12 @@ class StudentDetailView(DetailView):
         context['message_form'] = NewMessageForm()
         context['partner_id'] = self.object.user_id
         context['partner_role'] = get_partner_role(self.request.user)
+
+        completed_lessons = Progress.objects.filter(student=self.object, completed=True).count()
+        total_lessons = Lesson.objects.all().count()
+        context['completed_lessons'] = completed_lessons
+        context['total_lessons'] = total_lessons
+
         return context
 
     def post(self, request, *args, **kwargs):

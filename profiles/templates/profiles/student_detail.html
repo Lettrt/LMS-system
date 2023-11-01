@@ -10,7 +10,8 @@
             <p><strong>О себе:</strong> {{ student.bio }}</p>
             <h3>Уроки</h3>
             <ul>
-                пример
+                <li>Пройдено уроков: {{ completed_lessons }}</li>
+                <li>Всего уроков: {{ total_lessons }}</li>
             </ul>
             <h3>Домашние задания</h3>
             <ul>
@@ -41,7 +42,9 @@
             </a>
             {% endif %}
             <br>
+            {% if user != object.user %}
             <a href="{% url 'message_detail' partner_role partner_id %}" class="btn btn-primary">Написать сообщение</a>
+            {% endif %}
 
             <p class="mt-4"><strong><img src="{% static 'img/envelope-solid.svg' %}
                 " alt="email" width="20" class="pe-2">Email:</strong> {{ student.email }}</p>

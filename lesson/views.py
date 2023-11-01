@@ -72,6 +72,8 @@ class LessonDetailView(DetailView):
             lesson = self.get_object()
             completed = Progress.objects.filter(lesson=lesson, student=student, completed=True).exists()
             context['completed'] = completed
+        elif self.request.user.is_authenticated and hasattr(self.request.user, 'teacher_profile'):
+            context['is_teacher'] = True
         return context
 
 
