@@ -23,7 +23,8 @@
                 <p class="text-center"><strong>Урок завершен!</strong></p>
                 <p class="text-center"><strong>Не забудьте сделать домашнее задание!</strong></p>
                 <div class="d-flex flex-column justify-content-end align-items-center">
-                    <a href="{% url 'mark_as_completed' lesson.id %}"><button type="button" class="btn btn-info">К
+                    {{ homework_detail.id }}
+                    <a href="{% url 'homework_detail' lesson.id %}"><button type="button" class="btn btn-info">К
                             домашнему
                             заданию!</button></a>
                 </div>

@@ -1,13 +1,15 @@
-from typing import Any
-from django.db import models
-from django.db.models.query import QuerySet
-from django.views.generic.detail import DetailView
-from django.views.generic import ListView
-from django.shortcuts import get_object_or_404
-from django.shortcuts import render, redirect
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Lesson, Month, Week, Progress
-from .forms import LessonEditForm
+from django.urls import reverse_lazy
+from .models import Lesson, Month, Week, Homework, Progress, HomeworkSubmission
+from .forms import LessonEditForm, HomeworkSubmissionForm, GradeHomeworkForm
+
+def is_student(user):
+    return user.is_authenticated and hasattr(user, 'student_profile')
+
+def is_teacher(user):
+    return user.is_authenticated and hasattr(user, 'teacher_profile')
 
 class LessonListView(ListView):
     model = Lesson
@@ -16,24 +18,15 @@ class LessonListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['months'] = Month.objects.all() 
-        context['total_lessons_by_week'] = {week.id: week.lesson_set.count() for month in context['months'] for week in month.week_set.all()}
+        context['months'] = Month.objects.all()
+        weeks = Week.objects.prefetch_related('lesson_set').all()
+        context['total_lessons_by_week'] = {week.id: len(week.lesson_set.all()) for week in weeks}
 
-        completed_by_week = {}
-        if self.request.user.is_authenticated:
-            if hasattr(self.request.user, 'student_profile'):
-                student = self.request.user.student_profile
-                completed_lessons = Progress.objects.filter(student=student, completed=True).values_list('lesson_id', flat=True)
-                
-                for month in context['months']:
-                    for week in month.week_set.all():
-                        completed_for_week = sum(1 for lesson in week.lesson_set.all() if lesson.id in completed_lessons)
-                        completed_by_week[week.id] = completed_for_week
-                
-                context['completed_lessons_by_week'] = completed_by_week
-            else:
-                context['completed_lessons_by_week'] = {}
-                
+        if is_student(self.request.user):
+            student = self.request.user.student_profile
+            completed_lessons = Progress.objects.filter(student=student, completed=True).values_list('lesson_id', flat=True)
+            context['completed_lessons_by_week'] = {week.id: sum(1 for lesson in week.lesson_set.all() if lesson.id in completed_lessons) for week in weeks}
+
         return context
     
 class WeekListView(ListView):
@@ -53,7 +46,7 @@ class WeekListView(ListView):
         for week in context['weeks']:
             lessons_per_week[week.id] = Lesson.objects.filter(week_id=week.id)
         context['lessons_per_week'] = lessons_per_week
-        if self.request.user.is_authenticated and hasattr(self.request.user, 'student_profile'):
+        if is_student(self.request.user):
             context['student'] = self.request.user.student_profile
             completed_lessons = Progress.objects.filter(student=context['student'], completed=True).values_list('lesson_id', flat=True)
             context['completed_lessons'] = completed_lessons
@@ -67,13 +60,13 @@ class LessonDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if self.request.user.is_authenticated and hasattr(self.request.user, 'student_profile'):
+        if is_student(self.request.user):
             student = self.request.user.student_profile
             context['student'] = student
             lesson = self.get_object()
             completed = Progress.objects.filter(lesson=lesson, student=student, completed=True).exists()
             context['completed'] = completed
-        elif self.request.user.is_authenticated and hasattr(self.request.user, 'teacher_profile'):
+        elif is_teacher(self.request.user):
             context['is_teacher'] = True
             context['form'] = LessonEditForm(instance=self.object)
         return context
@@ -100,3 +93,17 @@ def mark_as_completed(request, lesson_id):
         progress.save()
 
     return redirect(request.META.get('HTTP_REFERER', 'fallback_url'))
+
+class HomeworkDetailView(DetailView):
+    model = Homework
+    template_name = 'lesson/homework_detail.html'
+    context_object_name = 'homework_detail'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if is_student(self.request.user):
+            student = self.request.user.student_profile
+            context['has_submitted'] = HomeworkSubmission.objects.filter(student=student, homework=self.object).exists()
+
+        return context
+        

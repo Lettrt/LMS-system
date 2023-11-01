@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Детали домашнего задания</h2>
+<p><strong>Тема урока:</strong> {{ homework_detail.lesson.title }}</p>
+<p><strong>Задание:</strong> {{ homework_detail.task }}</p>
+<p><strong>Срок сдачи:</strong> {{ homework_detail.due_date }}</p>
+<p><strong>ID урока:</strong> {{ homework_detail.lesson_id }}</p>
+{% if has_submitted %}
+<p>Сдано!</p>
+{% else %}
+<button type="button" class="btn btn-info" data-toggle="modal" data-target="#submissionModal">Сдать</button>
+{% endif %}
+{% endblock %}
