@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mt-5">
+    <div class="col-6 ms-5">
+        <div id="editor" style="height: 600px; width: 800px;">Тут ваш код для редактирования</div>
+        <form id="homeworkForm" method="post">
+            {% csrf_token %}
+            <input type="hidden" id="codeInput" name="answer">
+            <input type="hidden" name="homework_id" value="{{ homework.id }}">
+            <button type="submit" onclick="submitHomework();" class="btn btn-primary mt-3">Отправить</button>
+        </form>
+    </div>
+    <div class="col-4" style="text-align: justify; height: 600px; overflow-y: auto;">
+        <p><strong>Задание:</strong>
+            <pre style="white-space: pre-wrap;">{{ task }}</pre>
+        </p>
+    </div>
+</div>
+
+<script>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/monokai");
+    editor.session.setMode("ace/mode/python");
+    editor.session.getLength();
+    editor.session.setTabSize(4);
+</script>
+
+
+<script>
+    function submitHomework() {
+        var code = editor.getValue();
+        document.getElementById("codeInput").value = code;
+        document.getElementById("homeworkForm").submit();
+    }
+</script>
+
+{% endblock %}

@@ -1,3 +1,8 @@
-TOKEN = '6432545588:AAEGTJcjmabcVRXPRM-Q9hN3VMSe7QxNWrs'
-CHAT_ID = '-4044566227'
-ACCOUNT_ID = 'laptop1216'
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+TOKEN = os.environ.get('TOKEN')
+CHAT_ID = os.environ.get('CHAT_ID')
+ACCOUNT_ID = os.environ.get('ACCOUNT_ID')

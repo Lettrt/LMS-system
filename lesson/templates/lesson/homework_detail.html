@@ -9,6 +9,7 @@
 {% if has_submitted %}
 <p>Сдано!</p>
 {% else %}
-<button type="button" class="btn btn-info" data-toggle="modal" data-target="#submissionModal">Сдать</button>
+<a href="{% url 'homework_job' homework_detail.id %}"><button type="button" class="btn btn-info" data-toggle="modal"
+        data-target="#submissionModal">Сдать</button></a>
 {% endif %}
 {% endblock %}

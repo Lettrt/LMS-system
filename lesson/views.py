@@ -1,9 +1,11 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.views.decorators.http import require_POST
 from django.urls import reverse_lazy
 from .models import Lesson, Month, Week, Homework, Progress, HomeworkSubmission
-from .forms import LessonEditForm, HomeworkSubmissionForm, GradeHomeworkForm
+from .forms import LessonEditForm, HomeworkSubmissionForm
 
 def is_student(user):
     return user.is_authenticated and hasattr(user, 'student_profile')
@@ -106,4 +108,37 @@ class HomeworkDetailView(DetailView):
             context['has_submitted'] = HomeworkSubmission.objects.filter(student=student, homework=self.object).exists()
 
         return context
-        
+
+@method_decorator(login_required, name='dispatch')
+class HomeworkSubmissionCreateView(CreateView):
+    model = HomeworkSubmission
+    form_class = HomeworkSubmissionForm
+    template_name = 'lesson/homework_job.html'
+    
+    def form_valid(self, form):
+        homework_id = self.kwargs.get('pk')
+        homework = get_object_or_404(Homework, pk=homework_id)
+        submission, created = HomeworkSubmission.objects.update_or_create(
+            student=self.request.user.student_profile, 
+            homework=homework, 
+            defaults={'answer': form.cleaned_data['answer']}
+        )
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        return reverse_lazy('homework_detail')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        homework_id = self.kwargs.get('pk')
+        homework = get_object_or_404(Homework, pk=homework_id)
+        context['task'] = homework.task
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
