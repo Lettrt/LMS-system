@@ -15,17 +15,45 @@
             </ul>
             <h3>Домашние задания</h3>
             <ul>
-                пример
+                <li>Выполнено домашних заданий: {{ completed_homeworks_count }}</li>
+                <li>Всего домашних заданий: {{ total_homeworks_count }}</li>
             </ul>
             <h3>Прогресс</h3>
-            <p>Здесь будет отображаться прогресс студента.</p>
+            <div class="progress" style="height: 30px;">
+                <div class="progress-bar bg-success" role="progressbar" style="width: {{ progress_percentage }}%"
+                    aria-valuenow="{{ progress_percentage }}" aria-valuemin="0" aria-valuemax="100">
+                    {{ progress_percentage|floatformat:0 }}%</div>
+            </div>
 
             <h3>Средний балл</h3>
-            <p>Здесь будет отображаться средний балл студента.</p>
+            {% if average_grade %}
+            <p>Средний балл студента: {{ average_grade|floatformat:2 }}</p>
+            {% else %}
+            <p>Средний балл не доступен (нет оценок).</p>
+            {% endif %}
         </div>
+
+
         <div class="col-md-4">
-            <h4 class="text-center">Последие выполненные задания</h2>
+            <h4 class="text-center">Последние выполненные задания</h4>
+            <div class="last-submissions-scroll" style="height: 450px; overflow-y: auto;">
+                <ul class="list-group">
+                    {% for submission in last_submissions %}
+                    <li class="list-group-item">
+                        <a href="{% url 'homework_detail' submission.homework.lesson.id %}">
+
+                            <p><strong>Задание:</strong> {{ submission.homework.lesson.title }}</p>
+                        </a>
+                        <p><strong>Оценка:</strong> {{ submission.get_grade_display }}</p>
+                        <p><strong>Комментарий:</strong> {{ submission.feedback|default:"Нет комментария" }}</p>
+                    </li>
+                    {% empty %}
+                    <li class="list-group-item">Пока нет выполненных заданий.</li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
+
         <div class="col-md-4">
             {% if student.photo %}
             <img src="{{ student.photo.url }}" alt="{{ student.first_name }}" width="200"

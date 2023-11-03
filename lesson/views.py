@@ -2,11 +2,12 @@ from django.http import HttpResponseRedirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
 from django.urls import reverse, reverse_lazy
 from .models import Lesson, Month, Week, Homework, Progress, HomeworkSubmission
-from .forms import LessonEditForm, HomeworkSubmissionForm
+from .forms import LessonEditForm, HomeworkSubmissionForm, GradeHomeworkForm
 
 def is_student(user):
     return user.is_authenticated and hasattr(user, 'student_profile')
@@ -151,3 +152,28 @@ class HomeworkSubmissionCreateView(CreateView):
         return context
 
 
+class HomeworkReviewView(DetailView):
+    model = HomeworkSubmission
+    template_name = 'lesson/review_homework.html'
+    context_object_name = 'submission'
+    pk_url_kwarg = 'submission_id'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = GradeHomeworkForm(instance=self.object)
+        return context
+
+@require_POST
+def grade_homework(request, submission_id):
+    submission = get_object_or_404(HomeworkSubmission, id=submission_id)
+    form = GradeHomeworkForm(request.POST, instance=submission)
+    lesson_id = submission.homework.lesson.id
+    
+    if form.is_valid():
+        form.save()
+        messages.success(request, "Работа успешно оценена.")
+        return redirect('homework_list', lesson_id=lesson_id)
+    else:
+        for field in form.errors:
+            form[field].field.widget.attrs['class'] += ' is-invalid'
+        return render(request, 'lesson/review_homework.html', {'form': form, 'submission': submission})
