@@ -1,9 +1,10 @@
+from django.http import HttpResponseRedirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from .models import Lesson, Month, Week, Homework, Progress, HomeworkSubmission
 from .forms import LessonEditForm, HomeworkSubmissionForm
 
@@ -71,6 +72,7 @@ class LessonDetailView(DetailView):
         elif is_teacher(self.request.user):
             context['is_teacher'] = True
             context['form'] = LessonEditForm(instance=self.object)
+            context['homework_list_url'] = reverse('homework_list', kwargs={'lesson_id': self.kwargs.get('lesson_id')})
         return context
     
     def post(self, request, *args, **kwargs):
@@ -108,37 +110,44 @@ class HomeworkDetailView(DetailView):
             context['has_submitted'] = HomeworkSubmission.objects.filter(student=student, homework=self.object).exists()
 
         return context
+    
+class HomeworkListView(ListView):
+    model = HomeworkSubmission
+    template_name = 'lesson/homework_list.html'
+    context_object_name = 'submissions'
+
+    def get_queryset(self):
+        lesson_id = self.kwargs.get('lesson_id')
+        return HomeworkSubmission.objects.filter(homework__lesson_id=lesson_id, answer__isnull=False)
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['lesson_id'] = self.kwargs.get('lesson_id')
+        return context    
 
 @method_decorator(login_required, name='dispatch')
 class HomeworkSubmissionCreateView(CreateView):
     model = HomeworkSubmission
     form_class = HomeworkSubmissionForm
     template_name = 'lesson/homework_job.html'
-    
+
+    def dispatch(self, request, *args, **kwargs):
+        self.homework = get_object_or_404(Homework, pk=self.kwargs.get('pk'))
+        return super().dispatch(request, *args, **kwargs)
+
     def form_valid(self, form):
-        homework_id = self.kwargs.get('pk')
-        homework = get_object_or_404(Homework, pk=homework_id)
-        submission, created = HomeworkSubmission.objects.update_or_create(
-            student=self.request.user.student_profile, 
-            homework=homework, 
-            defaults={'answer': form.cleaned_data['answer']}
-        )
-        return super().form_valid(form)
-    
+        form.instance.student = self.request.user.student_profile
+        form.instance.homework = self.homework
+        form.save()
+        return HttpResponseRedirect(self.get_success_url())
+
     def get_success_url(self):
-        return reverse_lazy('homework_detail')
+        return reverse_lazy('homework_detail', kwargs={'pk': self.homework.pk})
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        homework_id = self.kwargs.get('pk')
-        homework = get_object_or_404(Homework, pk=homework_id)
-        context['task'] = homework.task
+        context['homework'] = self.homework
         return context
-    
-    def post(self, request, *args, **kwargs):
-        form = self.get_form()
-        if form.is_valid():
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
+
 

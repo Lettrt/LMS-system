@@ -1,0 +1,13 @@
+<!-- Создайте шаблон lesson/homework_list.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Список домашних заданий</h2>
+<ul>
+    {% for submission in submissions %}
+    <li>
+        {{ submission.student }} - <a href="{% url 'homework_detail' pk=submission.pk %}">Просмотреть работу</a>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}
