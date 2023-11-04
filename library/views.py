@@ -24,3 +24,8 @@ class LibraryListViiew(ListView):
         context = super().get_context_data(**kwargs)
         context['courses'] = Course.objects.all()
         return context
+    
+class LibraryDetailView(DetailView):
+    model = Library
+    template_name = 'library/library_detail.html'
+    context_object_name = 'library_detail'

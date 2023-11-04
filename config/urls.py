@@ -13,6 +13,7 @@ urlpatterns = [
     path('', include('user_messages.urls')),
     path('lessons/', include('lesson.urls')),
     path('library/', include('library.urls')),
+    path('library/', include('library.api.urls')),
     re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ]
 

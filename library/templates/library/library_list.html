@@ -28,7 +28,8 @@
         {% for book in library_list %}
         <div class="col">
             <div class="card h-100">
-                <img src="{{ book.logo.url }}" class="card-img-top" alt="{{ book.title }}">
+                <a href="{% url 'library_detail' book.id %}"><img src="{{ book.logo.url }}" class="card-img-top"
+                        alt="{{ book.title }}"></a>
                 <div class="card-body">
                     <h5 class="card-title">{{ book.title }}</h5>
                     <p class="card-text">{{ book.descriptions|truncatechars:100 }}</p>

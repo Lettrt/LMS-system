@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-3">
+    <h2>{{library_detail.title}}</h2>
+    <div class="row">
+        <div class="col-4">
+            <img src="{{ library_detail.logo.url }}" class="card-img-top" alt="{{ library_detail.title }}"
+                style="height: 600px;">
+        </div>
+        <div class="col">
+            <p class="card-text">{{ library_detail.descriptions }}</p>
+            <small class="text-muted">Автор: {{ library_detail.author }}</small>
+            <br>
+            <small class="text-muted">Год: {{ library_detail.year }}</small>
+            <br>
+            <a href="{{ library_detail.file.url }}" class="btn btn-sm btn-outline-primary mt-2">Скачать</a>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
