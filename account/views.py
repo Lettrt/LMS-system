@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from account.tasks import send_welcome_email
 from profiles.models import Student, Teacher, Manager
-from .forms import UserRegistrationForm
+from django.contrib.auth.views import PasswordResetView
+from .forms import CustomPasswordResetForm, UserRegistrationForm
 
 @login_required
 def dashboard(request):
@@ -40,7 +42,14 @@ def register(request):
             elif profile_type == 'manager':
                 Manager.objects.create(user=new_user, first_name=first_name, last_name=last_name, email=email)
 
+            send_welcome_email.delay(email, first_name)
+
             return render(request, 'registration/register_done.html', {'new_user': new_user})
     else:
         user_form = UserRegistrationForm()
     return render(request, 'registration/register.html', {'user_form': user_form})
+
+
+class CustomPasswordResetView(PasswordResetView):
+    form_class = CustomPasswordResetForm
+    html_email_template_name = 'registration/password_reset_email.html'
