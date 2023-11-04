@@ -7,7 +7,7 @@ from .serializers import StudentSerializer, TeacherSerializer, ManagerSerializer
 class StudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
-    permission_classes = [IsStudent, IsManager]
+    permission_classes = [IsStudent]
 
 class TeacherViewSet(viewsets.ModelViewSet):
     queryset = Teacher.objects.all()
@@ -17,4 +17,4 @@ class TeacherViewSet(viewsets.ModelViewSet):
 class ManagerViewSet(viewsets.ModelViewSet):
     queryset = Manager.objects.all()
     serializer_class = ManagerSerializer
-    permission_classes = [IsManager, IsManager]
+    permission_classes = [IsManager]
