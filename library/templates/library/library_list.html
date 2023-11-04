@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-3">
+    <h2>Библиотека</h2>
+    <form method="get" class="mb-4">
+        <div class="row">
+            <div class="col">
+                <input type="text" name="title" class="form-control" placeholder="Поиск по названию"
+                    value="{{ request.GET.title }}">
+            </div>
+            <div class="col">
+                <select name="course" class="form-select">
+                    <option value="">Выберите курс</option>
+                    {% for course in courses %}
+                    <option value="{{ course.id }}"
+                        {% if request.GET.course == course.id|stringformat:"s" %}selected{% endif %}>{{ course.title }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col">
+                <button type="submit" class="btn btn-primary">Поиск</button>
+            </div>
+        </div>
+    </form>
+    <div class="row row-cols-1 row-cols-md-4 g-4">
+        {% for book in library_list %}
+        <div class="col">
+            <div class="card h-100">
+                <img src="{{ book.logo.url }}" class="card-img-top" alt="{{ book.title }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ book.title }}</h5>
+                    <p class="card-text">{{ book.descriptions|truncatechars:100 }}</p>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">Автор: {{ book.author }}</small>
+                    <br>
+                    <small class="text-muted">Год: {{ book.year }}</small>
+                    <br>
+                    <a href="{{ book.file.url }}" class="btn btn-sm btn-outline-primary mt-2">Скачать</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col">
+            <p>Книги не найдены.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
