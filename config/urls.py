@@ -9,6 +9,7 @@ urlpatterns = [
     path('account/', include('account.urls')),
     path('account/api/', include('account.api.urls')),
     path('profiles/', include('profiles.urls')),
+    path('profiles/', include('profiles.api.urls')),
     path('', include('courses.urls')),
     path('', include('user_messages.urls')),
     path('lessons/', include('lesson.urls')),

@@ -3,7 +3,7 @@ from django.views.generic import ListView, DetailView
 from courses.models import Course
 from .models import Library
 
-class LibraryListViiew(ListView):
+class LibraryListView(ListView):
     model = Library
     template_name = 'library/library_list.html'
     context_object_name = 'library_list'
