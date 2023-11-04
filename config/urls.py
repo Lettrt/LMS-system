@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include, re_path
-from account.api.swagger import schema_view
+from config.swagger import schema_view
 from django.conf import settings
 from django.conf.urls.static import static
 

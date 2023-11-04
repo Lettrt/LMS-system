@@ -48,8 +48,6 @@ class Student(UserProfile):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student_profile')
     course = models.ForeignKey('courses.Course', on_delete=models.SET_NULL, null=True)
     
-    
-    
     class Meta:
         verbose_name = "Студент"
         verbose_name_plural = "Студенты"
