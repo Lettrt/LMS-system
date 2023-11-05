@@ -15,6 +15,7 @@ urlpatterns = [
     path('lessons/', include('lesson.urls')),
     path('library/', include('library.urls')),
     path('library/', include('library.api.urls')),
+    path('forum/', include('forum.urls')),
     re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ]
 

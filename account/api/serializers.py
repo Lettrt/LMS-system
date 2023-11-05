@@ -47,12 +47,18 @@ class UserCreateSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
 
+        profile_data = {
+            'first_name': validated_data['first_name'],
+            'last_name': validated_data['last_name'],
+            'email': validated_data['email'],
+        }
+
         if role == 'student':
-            Student.objects.create(user=user)
+            Student.objects.create(user=user, **profile_data)
         elif role == 'teacher':
-            Teacher.objects.create(user=user)
+            Teacher.objects.create(user=user, **profile_data)
         elif role == 'manager':
-            Manager.objects.create(user=user)
+            Manager.objects.create(user=user, **profile_data)
 
         return user
     

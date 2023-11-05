@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Форум</h1>
+    <div class="list-group">
+        {% for topic in topics %}
+        <a href="{% url 'subtopic_list' topic_id=topic.id %}"
+            class="list-group-item list-group-item-action d-flex align-items-start">
+            {% if topic.image %}
+            <img src="{{ topic.image.url }}" class="mr-3" alt="{{ topic.title }}" style="width: 100px; height: auto;">
+            {% endif %}
+            <div>
+                <h4>{{ topic.title }}</h4>
+                <p>{{ topic.description }}</p>
+            </div>
+        </a>
+        {% empty %}
+        <p>Нет топиков для отображения.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

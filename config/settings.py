@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'user_messages',
     'lesson',
     'library',
+    'forum',
 ]
 
 MIDDLEWARE = [
