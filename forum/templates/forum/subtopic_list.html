@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Подтемы</h1>
+    <div class="list-group">
+        {% for subtopic in subtopics %}
+        <a href="{% url 'subtopic_detail' subtopic.pk %}" class="list-group-item list-group-item-action">
+            <div>
+                <h4>{{ subtopic.title }}</h4>
+                <p>{{ subtopic.description }}</p>
+            </div>
+            <ul>
+                {% for post in subtopic.last_posts %}
+                <li>{{ post.message }}</li>
+                {% endfor %}
+            </ul>
+        </a>
+        {% empty %}
+        <p>Нет подтем для отображения.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

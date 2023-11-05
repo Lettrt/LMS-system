@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ subtopic.title }}</h2>
+    <p>{{ subtopic.description }}</p>
+
+    <div class="posts">
+        <h3>Посты</h3>
+        {% for post in subtopic.last_posts %}
+        <div class="post">
+            <p>{{ post.message }}</p>
+            <small>Автор: {{ post.created_by.get_full_name }}</small>
+        </div>
+        {% empty %}
+        <p>Нет постов для отображения.</p>
+        {% endfor %}
+    </div>
+
+    <div class="create-post mt-4">
+        <h3>Написать пост</h3>
+        <form method="post" action="{% url 'post_create' subtopic.id %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Отправить</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

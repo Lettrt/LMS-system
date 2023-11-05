@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'user_messages',
     'lesson',
     'library',
+    'forum',
 ]
 
 MIDDLEWARE = [
@@ -183,7 +184,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_HOST_USER = 'apikey'
-EMAIL_HOST_PASSWORD = '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'
+EMAIL_HOST_PASSWORD = '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'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'alexey.insurance@yandex.ru'
