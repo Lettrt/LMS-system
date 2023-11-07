@@ -14,15 +14,19 @@ class CSVDjangoFormatter(logging.Formatter):
             'level': record.levelname,
             'timestamp': self.formatTime(record),
             'message': record.getMessage(),
-        }
+        } 
+    
+ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')
+
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
-DEBUG = os.environ.get('DEBUG', False)
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
 
 INSTALLED_APPS = [
     'account',
@@ -83,11 +87,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.getenv('POSTGRES_DB', 'postgres'),
+        'USER': os.getenv('POSTGRES_USER', 'postgres'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'postgres'),
+        'HOST': os.getenv('DB_HOST', 'db'),
+        'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
 
@@ -153,8 +157,9 @@ SIMPLE_JWT = {
     'TOKEN_TYPE_CLAIM': 'token_type',
 }
 
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
+
 
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
@@ -183,8 +188,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.sendgrid.net'
-EMAIL_HOST_USER = 'apikey'
-EMAIL_HOST_PASSWORD = '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'
+EMAIL_HOST_USER = os.getenv('SENDGRID_USERNAME', 'apikey')
+EMAIL_HOST_PASSWORD = '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'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'alexey.insurance@yandex.ru'
@@ -214,3 +219,8 @@ LOGGING = {
         },
     },
 }
+
+try:
+    from .local_settings import *
+except ImportError:
+    pass
