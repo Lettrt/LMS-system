@@ -2,18 +2,21 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2>"Список домашних заданий"</h2>
+    <h2>Список домашних заданий</h2>
     {% if submissions %}
     <ul>
         {% for submission in submissions %}
         <li>
             {{ submission.student }} -
             <a href="{% url 'review_homework' submission_id=submission.pk %}">Просмотреть работу</a>
+            {% if submission.grade %}
+            <span class="text-success"> - Работа проверена</span>
+            {% endif %}
         </li>
         {% endfor %}
     </ul>
     {% else %}
-    <p>"Нет поданных домашних заданий."</p>
+    <p>Нет поданных домашних заданий.</p>
     {% endif %}
 </div>
 {% endblock %}
