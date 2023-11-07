@@ -1,4 +1,4 @@
-version: '3.10'
+version: '3.8'
 
 services:
   web:
@@ -10,8 +10,9 @@ services:
       - "8001:8001"
     depends_on:
       - db
-    environment:
-      DEBUG: 'True'
+      - redis
+    env_file:
+      - .env
 
   db:
     image: postgres
@@ -21,6 +22,33 @@ services:
       POSTGRES_PASSWORD: postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: "redis:alpine"
+    expose:
+      - "6379"
+
+  celery:
+    build: .
+    command: celery -A config worker -l info
+    depends_on:
+      - web
+      - redis
+    environment:
+      # Настройки для Celery
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+
+  celery-beat:
+    build: .
+    command: celery -A config beat -l info
+    depends_on:
+      - web
+      - redis
+    environment:
+      # Настройки для Celery Beat
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
 
 volumes:
   postgres_data:
