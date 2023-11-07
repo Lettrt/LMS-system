@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login
 from account.tasks import send_welcome_email
 from profiles.models import Student, Teacher, Manager
 from django.contrib.auth.views import PasswordResetView
@@ -44,7 +45,10 @@ def register(request):
 
             send_welcome_email.delay(email, first_name)
 
-            return render(request, 'registration/register_done.html', {'new_user': new_user})
+            new_user = authenticate(username=new_user.username, password=user_form.cleaned_data['password'])
+            login(request, new_user)
+
+            return custom_redirect(request)
     else:
         user_form = UserRegistrationForm()
     return render(request, 'registration/register.html', {'user_form': user_form})
