@@ -1,13 +1,13 @@
 from rest_framework import viewsets
 from courses.models import Course, Comment, Rating, CourseApplication
 from .serializers import CommentSerializer, CourseSerializer, RatingSerializer, CourseApplicationSerializer
-from .permissions import IsManager, IsStudent
+from .permissions import IsManager, IsStudent, ReadOnlyOrIsManager
 
 
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
-    permission_classes = [IsManager]
+    permission_classes = [ReadOnlyOrIsManager]
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
