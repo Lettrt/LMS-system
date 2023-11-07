@@ -3,28 +3,64 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2>{{ subtopic.title }}</h2>
+    <h2 class="mb-3">{{ subtopic.title }}</h2>
     <p>{{ subtopic.description }}</p>
 
-    <div class="posts">
+    <div class="posts mt-4">
         <h3>Посты</h3>
-        {% for post in subtopic.last_posts %}
-        <div class="post">
-            <p>{{ post.message }}</p>
-            <small>Автор: {{ post.created_by.get_full_name }}</small>
+        {% for post in posts_with_profiles %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <p class="card-text">{{ post.message }}</p>
+            </div>
+            <div class="card-footer text-muted">
+                <div class="media">
+                    {% if post.profile %}
+                    <img src="{{ post.profile.photo.url }}" class="mr-3"
+                        alt="{{ post.profile.first_name }} {{ post.profile.last_name }}"
+                        style="width: 64px; height: 64px; border-radius: 50%;">
+                    {% else %}
+                    <img src="{% static 'img/default_profile.png' %}" class="mr-3" alt="Default Profile"
+                        style="width: 64px; height: 64px; border-radius: 50%;">
+                    {% endif %}
+                    <div class="media-body">
+                        <h6 class="mt-0">{{ post.profile.first_name }} {{ post.profile.last_name }}</h6>
+                        <small>Опубликовано {{ post.created_at|date:"Y-m-d H:i" }}</small>
+                    </div>
+                </div>
+            </div>
         </div>
         {% empty %}
         <p>Нет постов для отображения.</p>
         {% endfor %}
     </div>
 
-    <div class="create-post mt-4">
-        <h3>Написать пост</h3>
-        <form method="post" action="{% url 'post_create' subtopic.id %}">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">Отправить</button>
-        </form>
+
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createPostModal">
+        Написать пост
+    </button>
+
+
+    <div class="modal fade" id="createPostModal" tabindex="-1" aria-labelledby="createPostModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createPostModalLabel">Новый пост</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" action="{% url 'post_create' subtopic.id %}">
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        {{ post_form.as_p }}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="submit" class="btn btn-primary">Создать пост</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-</div>
-{% endblock %}
+
+    {% endblock %}
