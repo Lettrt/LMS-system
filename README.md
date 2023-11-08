@@ -1,12 +1,18 @@
 # LMS-system
+- Деплой проекта в докер контейнере с celery & redis на VPS сервере http://31.129.106.81:8001/
+- flower - http://31.129.106.81:5555/
+# Запуск проекта
+```bash
+docker
+docker-compose
+
+
+
+# ОПИСАНИЕ ПРОЕКТА И ИСПОЛЬЗОВАННЫЕ РЕШЕНИЯ.
 - Проект имеет две логики: django + templates и DRF
 - База данных - PostgreSQL
 - Это сделано в связи с отсутсвием frontend разработичка.
 - Стек проекта: django, drf, postresql, docker, docker-compose, celery, redis, aiogram, pytest
-- Деплой проекта в докер контейнере с celery & redis на VPS сервере http://31.129.106.81:8001/
-- flower - http://31.129.106.81:5555/
-
-# ОПИСАНИЕ ПРОЕКТА И ИСПОЛЬЗОВАННЫЕ РЕШЕНИЯ.
 # Приложение account - отвечает за авторизацию и регистрацию пользователей
 Django + templates: 
 - авторизация/регистрация реализована с помощью стандартных инструментов 'django.contrib.auth.urls'
