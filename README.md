@@ -2,9 +2,18 @@
 - Деплой проекта в докер контейнере с celery & redis на VPS сервере http://31.129.106.81:8001/
 - flower - http://31.129.106.81:5555/
 # Запуск проекта
+Установка виртуального окружения
+```angular2htm
+python3 -m venv venv
+```
+source venv/bin/activate
+pip install -r requirements.txt
+
 ```bash
 docker
 docker-compose
+```
+
 
 
 
