@@ -14,6 +14,7 @@ source venv/bin/activate
 ```bash
 pip install -r requirements.txt
 ```
+```env
 Так же понадобится создать файл .env
 DEBUG=False
 SECRET_KEY=(ваш ключ проека)
@@ -29,6 +30,7 @@ CELERY_RESULT_BACKEND=redis://redis:6379/0
 SENDGRID_USERNAME=apikey
 SENDGRID_PASSWORD=ваш api sendgrid
 ALLOWED_HOSTS=*
+```
 
 ```bash
 docker
