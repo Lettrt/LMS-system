@@ -14,8 +14,8 @@ source venv/bin/activate
 ```bash
 pip install -r requirements.txt
 ```
-```env
 Так же понадобится создать файл .env
+```env
 DEBUG=False
 SECRET_KEY=(ваш ключ проека)
 TOKEN=токен бота
@@ -31,14 +31,22 @@ SENDGRID_USERNAME=apikey
 SENDGRID_PASSWORD=ваш api sendgrid
 ALLOWED_HOSTS=*
 ```
+Запуск docker контейнера:
+- celery & redis уже в контейнере
 
 ```bash
-docker
-docker-compose
+docker-compose up --build
 ```
+Применить миграции 
 
+```bash
+docker exec -i имя контейнера python3 manage.py migrate
+```
+Запустить тг бота
 
-
+```bash
+docker exec -i имя контейнера python3 ./tg_bot/main.py
+```
 
 # ОПИСАНИЕ ПРОЕКТА И ИСПОЛЬЗОВАННЫЕ РЕШЕНИЯ.
 - Проект имеет две логики: django + templates и DRF
